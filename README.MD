@@ -1,5 +1,5 @@
 ## Simple layer between VK and Telegram
-For those who can't or dont want to use VK.com.
+For those who can't or do not want to use VK.com.
 The goal is to let people recieve and send messages at vk.com while using Telegram only. 
   
 ___
