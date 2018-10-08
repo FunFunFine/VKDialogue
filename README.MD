@@ -7,6 +7,6 @@ ___
 ### First task
   Create simple single-user console version  of bot;
   MVP:
-    * login into account of user;
-    * check if one has new messages and show them if any;
-    * send message to <name>;
+* login into account of user;
+* check if one has new messages and show them if any;
+* send message to someone by name;
