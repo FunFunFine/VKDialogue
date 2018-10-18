@@ -6,11 +6,13 @@
     <properties>
         <maven.compiler.source>1.10</maven.compiler.source>
         <maven.compiler.target>1.10</maven.compiler.target>
+        <sourceDirectory>src/main/java/ru/urgu/vkDialogueBot</sourceDirectory>
     </properties>
 
     <groupId>ru.urgu</groupId>
     <artifactId>VKDialogue</artifactId>
     <version>0.1</version>
+
     <dependencies>
         <dependency>
             <groupId>com.vk.api</groupId>
