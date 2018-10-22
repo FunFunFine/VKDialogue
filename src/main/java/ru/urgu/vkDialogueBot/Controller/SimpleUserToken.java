@@ -9,4 +9,8 @@ public class SimpleUserToken implements IUserToken
         _hash = hash;
     }
 
+    public int getHash()
+    {
+        return _hash;
+    }
 }

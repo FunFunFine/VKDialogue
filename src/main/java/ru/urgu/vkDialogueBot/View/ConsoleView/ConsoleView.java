@@ -1,94 +1,75 @@
 package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 
-import ru.urgu.vkDialogueBot.Controller.IUserToken;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.Event;
+import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
 import ru.urgu.vkDialogueBot.View.IView;
 
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class ConsoleView implements IView
 {
-    private final Map<GUIState, String> _state_menus = new HashMap<GUIState, String>()
-    {{
-        put(GUIState.UNAUTHORISED, "Введите логин и пароль:");
-        put(GUIState.NOTREAD, "1. Проверить сообщения\n2. Выйти");
-        put(GUIState.WaitingForCommand, "1. Проверить сообщения\n2. Открыть диалог с юзером\n3. Выйти");
-        put(GUIState.INDIALOGUE, "");
-        put(GUIState.STARTED, "Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :) \n Жду команды!");
-    }};
-    private GUIState _state = GUIState.STARTED;
+    private final List<IObserver> _observers = new LinkedList<>();
+    private final SimpleUserToken _user;
+    //Антон - send 147985909 VCD
+    // Я - send 161856178 macho
     private ConsoleViewState _currentState = ConsoleViewState.Offline;
-    private List<IObserver> _observers = new LinkedList<>();
-    private IUserToken _user;
 
     public ConsoleView()
     {
-
+        _user = new SimpleUserToken(5463728);
     }
 
-    private void executeStateMethod(GUIState state)
+    private String readCommand(Scanner scanner)
     {
-        if (state == GUIState.UNAUTHORISED)
-        {
-            authorise();
-        }
-        else if (state == GUIState.STARTED)
-        {
-            state = GUIState.WaitingForCommand;
-        }
+        System.out.println("Жду команду...");
+        return scanner.nextLine();
     }
 
-    private void authorise()
-    {
-        var input = new Scanner(System.in);
-        System.out.println("Логин: ");
-        var login = input.nextLine();
-        System.out.println("Пароль: ");
-        var password = input.nextLine();
-    }
-
-    private String readCommand()
-    {
-        try (var inputScanner = new Scanner(System.in))
-        {
-            System.out.println("Жду команду...");
-            return inputScanner.nextLine();
-
-        }
-
-    }
-
-    /*
-    -hello im bot whatcha do?
-    -phrase
-    -parse phrase
-    -answer result
-    ask whatcha do
-
-     */
     private Event parseCommand(String command)
     {
+        var fields = command.toLowerCase().split(" ");
         if (command.toLowerCase().equals("help"))
         {
-            System.out.println("HA!");
+            System.out.println("send *id* *message* - отправить сообщение пользователю с id");
+            System.out.println("exit - выход");
         }
-        else if (command.toLowerCase().contains("send"))
+        else if (fields[0].toLowerCase().equals("send"))
         {
-            if (_user == null)
-            {
+//            if (_user == null)
+//            {
+//                throw new NullPointerException("_user is null");
+//            }
 
+//            var patternStr = "send (?<id>[0-9]+) (?<msg>.+)";
+//            var pattern = Pattern.compile(patternStr);
+//            var m = pattern.matcher(command.toLowerCase());
+//            var strId = m.group("id");
+//            var id = Integer.parseInt(strId);
+//            var message = m.group("msg");
+            var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
+            var id = Integer.parseInt(fields[1]);
+            var messageBuilder = new StringBuilder();
+            for (var i = 2; i < fields.length; i++)
+            {
+                messageBuilder.append(fields[i]).append(" ");
             }
 
-            var patternStr = "send ([0-9]+) \"(.+?)\"";
-            var pattern = Pattern.compile(patternStr);
-            var matcher = pattern.matcher(command.toLowerCase());
-            return new SendMessageEvent(Integer.parseInt(matcher.group(1)), matcher.group(2), new SimpleUserToken(3)); // тут надо на логине создавать SimpleUserToken и его передавать сюда и как-то генерить по логину и паролю или хз, чет такое
-
+            return new SendMessageEvent(id, headline + messageBuilder.toString(), _user);
+        }
+        else if (command.toLowerCase().equals("exit"))
+        {
+            System.out.println("До свидания");
+            _currentState = ConsoleViewState.Offline;
+        }
+        else
+        {
+            System.out.println("Я не знаю такую команду");
         }
         return null;
     }
@@ -98,15 +79,14 @@ public class ConsoleView implements IView
     public void run()
     {
         _currentState = ConsoleViewState.Started;
+        var scanner = new Scanner(System.in);
         while (!_currentState.equals(ConsoleViewState.Offline))
         {
             switch (_currentState)
             {
                 case Waiting:
                     break;
-
                 case Working:
-
                     break;
                 case Offline:
                     break;
@@ -115,19 +95,18 @@ public class ConsoleView implements IView
                     _currentState = ConsoleViewState.Waiting;
                     break;
             }
-            var command = parseCommand(readCommand());
+            var command = parseCommand(readCommand(scanner));
             if (command != null)
             {
                 act(command);
                 notify(command);
             }
-
         }
     }
 
     private void greetUser()
     {
-        System.out.println("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :) \n Жду команды!");
+        System.out.println("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :)");
     }
 
     private void act(Event command)
@@ -159,6 +138,14 @@ public class ConsoleView implements IView
     @Override
     public void receiveEvent(Event event)
     {
-
+        if (event.getClass().isInstance(FailureEvent.class))
+        {
+            var failureEvent = (FailureEvent) event;
+            System.out.println(failureEvent.getUserToken() + failureEvent.describe());
+        }
+        else
+        {
+            System.out.println("Message sent");
+        }
     }
 }

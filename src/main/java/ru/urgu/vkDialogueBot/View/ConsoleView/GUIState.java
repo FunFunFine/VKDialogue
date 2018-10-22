@@ -2,9 +2,9 @@ package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 public enum GUIState
 {
-    UNAUTHORISED,
-    NOTREAD,
+    Unauthorised,
+    NotRead,
     WaitingForCommand,
-    INDIALOGUE,
-    STARTED
+    InDialogue,
+    Started
 }
