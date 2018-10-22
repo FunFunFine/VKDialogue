@@ -1,9 +1,8 @@
-package ru.urgu.vkDialogueBot.View.TelegramView;
+package ru.urgu.vkDialogueBot.View;
 
 
-import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
+import ru.urgu.vkDialogueBot.Controller.IObserver;
 import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.View.IView;
 
 public class TelegramView implements IView
 {
@@ -27,12 +26,6 @@ public class TelegramView implements IView
 
     @Override
     public void removeObserver(IObserver observer)
-    {
-
-    }
-
-    @Override
-    public void receiveEvent(Event event)
     {
 
     }

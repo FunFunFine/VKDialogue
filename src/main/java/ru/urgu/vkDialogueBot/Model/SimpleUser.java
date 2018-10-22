@@ -1,4 +1,7 @@
-package ru.urgu.vkDialogueBot.Controller;
+package ru.urgu.vkDialogueBot.Model;
+
+import ru.urgu.vkDialogueBot.Controller.IUserToken;
+import ru.urgu.vkDialogueBot.View.IUser;
 
 public class SimpleUser implements IUser
 {

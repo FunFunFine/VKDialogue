@@ -1,7 +1,5 @@
 package ru.urgu.vkDialogueBot.Controller;
 
-import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
-import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Model.VkModel;
 import ru.urgu.vkDialogueBot.View.IView;

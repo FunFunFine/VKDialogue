@@ -5,9 +5,8 @@ import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
-import ru.urgu.vkDialogueBot.Controller.IUser;
-import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
+import ru.urgu.vkDialogueBot.View.IUser;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,7 +18,7 @@ public class VkModel
     private final VkApiClient _vk;
     private final GroupActor _actor;
     private final HashSet<IUser> _users = new HashSet<>();
-    private final Map<Class, Function<Event, Event>> _eventActionMapping = new HashMap<>()
+    private final Map<Class, Func<Event, Event>> _eventActionMapping = new HashMap<>()
     {
         {
             put(UserCreationEvent.class, (event) -> addUser((UserCreationEvent) event));
@@ -65,6 +64,6 @@ public class VkModel
 
     public Event processEvent(Event event)
     {
-        return _eventActionMapping.get(event.getClass()).apply(event);
+        return _eventActionMapping.get(event.getClass()).act(event);
     }
 }
