@@ -1,0 +1,19 @@
+package ru.urgu.vkDialogueBot;
+
+import ru.urgu.vkDialogueBot.Controller.BotController;
+import ru.urgu.vkDialogueBot.Model.VkModel;
+import ru.urgu.vkDialogueBot.View.ConsoleView;
+
+public class Main
+{
+
+    public static void main(String[] args)
+    {
+        var gui = new ConsoleView();
+        var model = new VkModel();
+        var controller = new BotController(model, gui);
+        gui.addObserver(controller);
+        controller.addObserver(gui);
+        controller.runBot();
+    }
+}
