@@ -1,4 +1,4 @@
-package ru.urgu.vkDialogueBot.Controller;
+package ru.urgu.vkDialogueBot.Controller.ObserverPattern;
 
 import ru.urgu.vkDialogueBot.Events.Event;
 

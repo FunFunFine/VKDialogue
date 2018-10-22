@@ -1,11 +1,12 @@
-package ru.urgu.vkDialogueBot.View;
+package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 
-import ru.urgu.vkDialogueBot.Controller.IObserver;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
+import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
+import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ public class ConsoleView implements IView
         put(GUIState.INDIALOGUE, "");
         put(GUIState.STARTED, "Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :) \n Жду команды!");
     }};
-    private GUIState _state = ru.urgu.vkDialogueBot.View.GUIState.STARTED;
+    private GUIState _state = GUIState.STARTED;
     private ConsoleViewState _currentState = ConsoleViewState.Offline;
     private List<IObserver> _observers = new LinkedList<>();
     private IUserToken _user;
@@ -86,7 +87,7 @@ public class ConsoleView implements IView
             var patternStr = "send ([0-9]+) \"(.+?)\"";
             var pattern = Pattern.compile(patternStr);
             var matcher = pattern.matcher(command.toLowerCase());
-            return new SendMessageEvent(Integer.parseInt(matcher.group(1)), matcher.group(2), new SimpleUserToken()); // тут надо на логине создавать SimpleUserToken и его передавать сюда и как-то генерить по логину и паролю или хз, чет такое
+            return new SendMessageEvent(Integer.parseInt(matcher.group(1)), matcher.group(2), new SimpleUserToken(3)); // тут надо на логине создавать SimpleUserToken и его передавать сюда и как-то генерить по логину и паролю или хз, чет такое
 
         }
         return null;

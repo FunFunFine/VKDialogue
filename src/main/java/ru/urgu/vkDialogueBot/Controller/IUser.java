@@ -1,5 +1,6 @@
 package ru.urgu.vkDialogueBot.Controller;
 
-interface IMessage
+public interface IUser
 {
+
 }
