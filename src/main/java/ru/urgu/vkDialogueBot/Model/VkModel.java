@@ -36,6 +36,7 @@ public class VkModel
 
     }
 
+
     private Event sendMessage(SendMessageEvent event)
     {
         var message = event.getMessage();

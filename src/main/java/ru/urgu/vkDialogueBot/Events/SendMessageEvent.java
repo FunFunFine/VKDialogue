@@ -1,27 +1,19 @@
 package ru.urgu.vkDialogueBot.Events;
 
-import lombok.Data;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
-
 
 public class SendMessageEvent extends Event
 {
     private int _id;
     private String _message;
-    private IUserToken _userToken;
 
     public SendMessageEvent(int id, String message, IUserToken userToken)
     {
+        super(userToken);
         _id = id;
         _message = message;
-        _userToken = userToken;
     }
 
-    @Override
-    public IUserToken getUserToken()
-    {
-        return _userToken;
-    }
 
     @Override
     public String describe()

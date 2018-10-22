@@ -4,11 +4,9 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class GetHelpEvent extends Event
 {
-
-    @Override
-    public IUserToken getUserToken()
+    public GetHelpEvent(IUserToken token)
     {
-        return null;
+        super(token);
     }
 
     @Override

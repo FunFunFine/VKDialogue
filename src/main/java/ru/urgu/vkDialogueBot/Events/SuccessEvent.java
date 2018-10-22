@@ -4,18 +4,9 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class SuccessEvent extends Event
 {
-    private final IUserToken _userToken;
-
-    public SuccessEvent(IUserToken userToken)
+    public SuccessEvent(IUserToken token)
     {
-        _userToken = userToken;
-    }
-
-
-    @Override
-    public IUserToken getUserToken()
-    {
-        return _userToken;
+        super(token);
     }
 
     @Override

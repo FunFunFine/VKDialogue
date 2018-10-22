@@ -4,11 +4,9 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class UserLeaveEvent extends Event
 {
-
-    @Override
-    public IUserToken getUserToken()
+    public UserLeaveEvent(IUserToken token)
     {
-        return null;
+        super(token);
     }
 
     @Override
