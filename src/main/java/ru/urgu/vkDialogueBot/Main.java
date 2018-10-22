@@ -2,7 +2,7 @@ package ru.urgu.vkDialogueBot;
 
 import ru.urgu.vkDialogueBot.Controller.BotController;
 import ru.urgu.vkDialogueBot.Model.VkModel;
-import ru.urgu.vkDialogueBot.View.ConsoleView;
+import ru.urgu.vkDialogueBot.View.ConsoleView.ConsoleView;
 
 public class Main
 {

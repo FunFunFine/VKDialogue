@@ -1,4 +1,4 @@
-package ru.urgu.vkDialogueBot.View;
+package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 public enum ConsoleViewState
 {
