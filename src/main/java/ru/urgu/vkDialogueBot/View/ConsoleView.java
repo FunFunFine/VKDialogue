@@ -1,20 +1,17 @@
 package ru.urgu.vkDialogueBot.View;
 
 
+import ru.urgu.vkDialogueBot.Controller.IObserver;
+import ru.urgu.vkDialogueBot.Controller.IUserToken;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.Controller.IObserver;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ConsoleView implements IView, IObserver
+public class ConsoleView implements IView
 {
-    private GUIState _state = ru.urgu.vkDialogueBot.View.GUIState.STARTED;
-    private ConsoleViewState _currentState = ConsoleViewState.Offline;
-
     private final Map<GUIState, String> _state_menus = new HashMap<GUIState, String>()
     {{
         put(GUIState.UNAUTHORISED, "Введите логин и пароль:");
@@ -23,7 +20,15 @@ public class ConsoleView implements IView, IObserver
         put(GUIState.INDIALOGUE, "");
         put(GUIState.STARTED, "Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :) \n Жду команды!");
     }};
+    private GUIState _state = ru.urgu.vkDialogueBot.View.GUIState.STARTED;
+    private ConsoleViewState _currentState = ConsoleViewState.Offline;
     private List<IObserver> _observers = new LinkedList<>();
+    private IUserToken _user;
+
+    public ConsoleView()
+    {
+
+    }
 
     private void executeStateMethod(GUIState state)
     {
@@ -44,11 +49,6 @@ public class ConsoleView implements IView, IObserver
         var login = input.nextLine();
         System.out.println("Пароль: ");
         var password = input.nextLine();
-    }
-
-    public ConsoleView()
-    {
-
     }
 
     private String readCommand()
@@ -78,6 +78,11 @@ public class ConsoleView implements IView, IObserver
         }
         else if (command.toLowerCase().contains("send"))
         {
+            if (_user == null)
+            {
+
+            }
+
             var patternStr = "send ([0-9]+) \"(.+?)\"";
             var pattern = Pattern.compile(patternStr);
             var matcher = pattern.matcher(command.toLowerCase());

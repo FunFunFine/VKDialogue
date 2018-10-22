@@ -1,6 +1,5 @@
 package ru.urgu.vkDialogueBot.Events;
 
-import ru.urgu.vkDialogueBot.Controller.BotController;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class SuccessEvent extends Event

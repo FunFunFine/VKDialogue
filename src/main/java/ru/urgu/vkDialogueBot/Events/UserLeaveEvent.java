@@ -2,7 +2,7 @@ package ru.urgu.vkDialogueBot.Events;
 
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
-public class GetHelpEvent extends Event
+public class UserLeaveEvent extends Event
 {
 
     @Override
