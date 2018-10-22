@@ -1,6 +1,8 @@
 package ru.urgu.vkDialogueBot.Model;
 
-public class VkUser
+import ru.urgu.vkDialogueBot.Controller.IUser;
+
+public class VkUser implements IUser
 {
     public VkUser()
     {
