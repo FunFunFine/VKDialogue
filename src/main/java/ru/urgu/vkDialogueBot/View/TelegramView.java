@@ -29,4 +29,10 @@ public class TelegramView implements IView
     {
 
     }
+
+    @Override
+    public void receiveEvent(Event event)
+    {
+
+    }
 }
