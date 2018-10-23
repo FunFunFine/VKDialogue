@@ -6,19 +6,27 @@ import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
+import ru.urgu.vkDialogueBot.Events.SuccessEvent;
 import ru.urgu.vkDialogueBot.View.IView;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Function;
 
 public class ConsoleView implements IView
 {
     private final List<IObserver> _observers = new LinkedList<>();
     private final SimpleUserToken _user;
-    //Антон - send 147985909 VCD
-    // Я - send 161856178 macho
+    // Антон - send 147985909
+    // Саша - send 161856178
     private ConsoleViewState _currentState = ConsoleViewState.Offline;
+    private Map<Class, Function<Event, Event>> _eventProcessMapping = new HashMap<>()
+    {
+        {
+            put(SuccessEvent.class, event -> processSuccess((SuccessEvent) event));
+            put(FailureEvent.class, event -> processFailure((FailureEvent) event));
+        }
+
+    };
 
     public ConsoleView()
     {
@@ -41,17 +49,6 @@ public class ConsoleView implements IView
         }
         else if (fields[0].toLowerCase().equals("send"))
         {
-//            if (_user == null)
-//            {
-//                throw new NullPointerException("_user is null");
-//            }
-
-//            var patternStr = "send (?<id>[0-9]+) (?<msg>.+)";
-//            var pattern = Pattern.compile(patternStr);
-//            var m = pattern.matcher(command.toLowerCase());
-//            var strId = m.group("id");
-//            var id = Integer.parseInt(strId);
-//            var message = m.group("msg");
             var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
             var id = Integer.parseInt(fields[1]);
             var messageBuilder = new StringBuilder();
@@ -59,7 +56,6 @@ public class ConsoleView implements IView
             {
                 messageBuilder.append(fields[i]).append(" ");
             }
-
             return new SendMessageEvent(id, headline + messageBuilder.toString(), _user);
         }
         else if (command.toLowerCase().equals("exit"))
@@ -111,8 +107,8 @@ public class ConsoleView implements IView
 
     private void act(Event command)
     {
-
     }
+
 
     @Override
     public void notify(Event event)
@@ -138,14 +134,19 @@ public class ConsoleView implements IView
     @Override
     public void receiveEvent(Event event)
     {
-        if (event.getClass().isInstance(FailureEvent.class))
-        {
-            var failureEvent = (FailureEvent) event;
-            System.out.println(failureEvent.getUserToken() + failureEvent.describe());
-        }
-        else
-        {
-            System.out.println("Message sent");
-        }
+        _eventProcessMapping.get(event.getClass()).apply(event);
+
+    }
+
+    private Event processSuccess(SuccessEvent event)
+    {
+        System.out.println("Message sent");
+        return null;
+    }
+
+    private Event processFailure(FailureEvent event)
+    {
+        System.out.println(event.getUserToken() + event.describe());
+        return null;
     }
 }

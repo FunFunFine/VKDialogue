@@ -10,8 +10,7 @@ public class Main
     public static void main(String[] args)
     {
         var gui = new ConsoleView();
-        var model = new VkModel();
-        var controller = new BotController(model, gui);
+        var controller = new BotController(new VkModel(), gui);
         gui.addObserver(controller);
         controller.addObserver(gui);
         controller.runBot();
