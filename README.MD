@@ -1,12 +1,17 @@
-## Simple layer between VK and Telegram
-For those who can't or do not want to use VK.com.
-The goal is to let people recieve and send messages at vk.com while using Telegram only. 
-  
-___
+### Телеграмматор
 
-### First task
-  Create simple single-user console version  of bot;
-  MVP:
-* login into account of user;
-* check if one has new messages and show them if any;
-* send message to someone by name;
+___
+  
+1. Реализовать:
+      + общение с пользователями Вконтакте туда и обратно через консоль;
+      + доступные команды:
+        * Помощь;
+        * Выбрать диалог по имени\ссылке пользователя ВК (создать, если еще не существует);
+        * Отправить сообщение (предложить выбрать диалог, если не выбран);
+        * Прочитать сообщения (непрочитанные\новые);
+        * Выйти;
+      + Непрерывное общение:
+        * Не падать на внутренних ошибках;
+        * Общаться вечно;
+      
+  
