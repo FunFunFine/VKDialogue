@@ -1,16 +1,41 @@
 package ru.urgu.vkDialogueBot.Events;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
-public class SendMessageEvent extends Event
+
+@EqualsAndHashCode(callSuper = true)
+@Value
+public class SendMessageEvent extends MessageEvent
 {
-    private int _id;
+
+
     private String _message;
 
-    public SendMessageEvent(int id, String message, IUserToken userToken)
+    public SendMessageEvent(int id, String message, IUserToken token)
     {
-        super(userToken);
+        this(message, token, ReceiverType.Id);
         _id = id;
+    }
+
+    public SendMessageEvent(String name, String surname, String message, IUserToken token)
+    {
+        this(message, token, ReceiverType.NameSurname);
+        _name = name;
+        _surname = surname;
+    }
+
+
+    public SendMessageEvent(String screenName, String message, IUserToken token)
+    {
+        this(message, token, ReceiverType.ScreenName);
+        _screenName = screenName;
+    }
+
+    private SendMessageEvent(String message, IUserToken token, ReceiverType receiverType)
+    {
+        super(token, receiverType);
         _message = message;
     }
 
@@ -21,13 +46,5 @@ public class SendMessageEvent extends Event
         return String.format("Отправляем %s для id %s", _message, _id);
     }
 
-    public String getMessage()
-    {
-        return _message;
-    }
 
-    public int getId()
-    {
-        return _id;
-    }
 }

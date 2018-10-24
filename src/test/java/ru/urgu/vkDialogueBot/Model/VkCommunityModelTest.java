@@ -2,13 +2,13 @@ package ru.urgu.vkDialogueBot.Model;
 
 import org.junit.Test;
 
-public class VkModelTest
+public class VkCommunityModelTest
 {
 
     @Test
     public void processEvent()
     {
-        var vkModel = new VkModel();
+        var vkModel = new VkCommunityModel();
 
     }
 }

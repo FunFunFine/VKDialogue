@@ -3,7 +3,7 @@ package ru.urgu.vkDialogueBot.Controller;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.Model.VkModel;
+import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.LinkedList;
@@ -11,11 +11,11 @@ import java.util.LinkedList;
 public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
-    private final VkModel _model;
+    private final VkCommunityModel _model;
     private LinkedList<IObserver> _observers = new LinkedList<>();
 
 
-    public BotController(VkModel vkModel, IView gui)
+    public BotController(VkCommunityModel vkModel, IView gui)
     {
         _model = vkModel;
         _gui = gui;
