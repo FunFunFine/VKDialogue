@@ -31,6 +31,7 @@ public class ConsoleView implements IView
     public ConsoleView()
     {
         _user = new SimpleUserToken(5463728);
+        var a = _user.getHash();
     }
 
     private String readCommand(Scanner scanner)

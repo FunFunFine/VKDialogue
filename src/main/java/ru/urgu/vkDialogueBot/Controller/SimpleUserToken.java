@@ -1,7 +1,10 @@
 package ru.urgu.vkDialogueBot.Controller;
 
+import lombok.Getter;
+
 public class SimpleUserToken implements IUserToken
 {
+    @Getter
     private final int _hash;
 
     public SimpleUserToken(int hash)
@@ -9,8 +12,8 @@ public class SimpleUserToken implements IUserToken
         _hash = hash;
     }
 
-    public int getHash()
-    {
-        return _hash;
-    }
+//    public int getHash()
+//    {
+//        return _hash;
+//    }
 }
