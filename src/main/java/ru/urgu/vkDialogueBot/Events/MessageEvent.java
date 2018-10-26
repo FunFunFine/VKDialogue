@@ -7,15 +7,15 @@ public abstract class MessageEvent extends Event
 {
     public final ReceiverType _receiverType;
     @NonFinal
-    protected String _screenName = null;
+    String _screenName = null;
     @NonFinal
-    protected String _name = null;
+    String _name = null;
     @NonFinal
-    protected String _surname = null;
+    String _surname = null;
     @NonFinal
-    protected int _id = 0;
+    int _id = 0;
 
-    public MessageEvent(IUserToken token, ReceiverType receiverType)
+    MessageEvent(IUserToken token, ReceiverType receiverType)
     {
         super(token);
         _receiverType = receiverType;
