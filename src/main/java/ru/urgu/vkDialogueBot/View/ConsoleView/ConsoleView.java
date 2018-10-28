@@ -3,10 +3,7 @@ package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
-import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.Events.FailureEvent;
-import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
-import ru.urgu.vkDialogueBot.Events.SuccessEvent;
+import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.*;
@@ -46,6 +43,7 @@ public class ConsoleView implements IView
         if (command.toLowerCase().equals("help"))
         {
             System.out.println("send *id* *message* - отправить сообщение пользователю с id");
+            System.out.println("read *id* - прочитать последние сообщения пользователя с id");
             System.out.println("exit - выход");
         }
         else if (fields[0].toLowerCase().equals("send"))
@@ -58,6 +56,11 @@ public class ConsoleView implements IView
                 messageBuilder.append(fields[i]).append(" ");
             }
             return new SendMessageEvent(id, headline + messageBuilder.toString(), _user);
+        }
+        else if (fields[0].toLowerCase().equals("read"))
+        {
+            var id = Integer.parseInt(fields[1]);
+            return new CheckMessagesEvent(id, _user);
         }
         else if (command.toLowerCase().equals("exit"))
         {
@@ -141,6 +144,14 @@ public class ConsoleView implements IView
 
     private Event processSuccess(SuccessEvent event)
     {
+        if (event.getData() != null)
+        {
+            var messages = (String[]) event.getData();
+            for (var message : messages)
+            {
+                System.out.println(message);
+            }
+        }
         System.out.println("Message sent");
         return null;
     }
