@@ -5,6 +5,7 @@ import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.messages.Message;
 import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
@@ -40,17 +41,50 @@ public class VkCommunityModel extends VkModel
     @Override
     protected Event checkMessages(CheckMessagesEvent event)
     {
-        return null;
+        try
+        {
+            var id = getId(event);
+            var history = _vk.messages().getHistory(_actor).userId(id).offset(-7).startMessageId(-1).count(50).execute();
+            var unreadAmount = history.getUnread();
+            var messages = history.getItems().stream().limit(unreadAmount).map(Message::getBody).toArray(String[]::new);
+            var result = new SuccessEvent(event.getUserToken());
+            result.setData(messages);
+            return result;
+        } catch (ApiException | ClientException e)
+        {
+            System.out.println(e);
+            return new FailureEvent(event.getUserToken());
+        }
+    }
+
+    private int getId(MessageEvent event) throws ClientException, ApiException
+    {
+        var idType = event.getReceiverType();
+        switch (idType)
+        {
+            case Id:
+                return event.getId();
+            case NameSurname:
+                return findUser(event.getName(), event.getSurname());
+            case ScreenName:
+                var user = _vk.users().get(_actor).userIds(event.getScreenName()).execute().iterator().next();
+                return user.getId();
+        }
+        return 0;
+    }
+
+    private int findUser(String name, String surname)
+    {
+        return 0;
     }
 
     @Override
     protected Event sendMessage(SendMessageEvent event)
     {
-
         var message = event.getMessage();
-        var id = event.getId();
         try
         {
+            var id = getId(event);
             _vk.messages().send(_actor).userId(id).message(message).execute();
         } catch (ApiException | ClientException e)
         {

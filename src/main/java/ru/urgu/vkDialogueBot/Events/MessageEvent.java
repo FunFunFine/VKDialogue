@@ -5,7 +5,7 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public abstract class MessageEvent extends Event
 {
-    public final ReceiverType _receiverType;
+    private final ReceiverType _receiverType;
     @NonFinal
     String _screenName = null;
     @NonFinal
