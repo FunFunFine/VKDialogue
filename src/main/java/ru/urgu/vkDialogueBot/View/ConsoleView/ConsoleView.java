@@ -3,11 +3,14 @@ package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
-import ru.urgu.vkDialogueBot.Events.*;
+import ru.urgu.vkDialogueBot.Events.CheckMessagesEvent;
+import ru.urgu.vkDialogueBot.Events.Event;
+import ru.urgu.vkDialogueBot.Events.FailureEvent;
+import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
+import ru.urgu.vkDialogueBot.Utils.Action;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class ConsoleView implements IView
 {
@@ -16,10 +19,11 @@ public class ConsoleView implements IView
     // Антон - send 147985909
     // Саша - send 161856178
     private ConsoleViewState _currentState = ConsoleViewState.Offline;
-    private Map<Class, Function<Event, Event>> _eventProcessMapping = new HashMap<>()
+    private Map<Class, Action<Event>> _eventProcessMapping = new HashMap<>()
     {
         {
-            put(SuccessEvent.class, event -> processSuccess((SuccessEvent) event));
+            put(SendMessageEvent.class, event -> processSendMessages((SendMessageEvent) event));
+            put(CheckMessagesEvent.class, event -> processCheckMessages((CheckMessagesEvent) event));
             put(FailureEvent.class, event -> processFailure((FailureEvent) event));
         }
 
@@ -29,6 +33,20 @@ public class ConsoleView implements IView
     {
         _user = new SimpleUserToken(5463728);
         var a = _user.getHash();
+    }
+
+    private void processCheckMessages(CheckMessagesEvent event)
+    {
+        var messages = event.getMessages();
+        for (var message : messages)
+        {
+            System.out.println(message);
+        }
+    }
+
+    private void processSendMessages(SendMessageEvent event)
+    {
+        System.out.println("Message sent");
     }
 
     private String readCommand(Scanner scanner)
@@ -142,23 +160,8 @@ public class ConsoleView implements IView
 
     }
 
-    private Event processSuccess(SuccessEvent event)
-    {
-        if (event.getData() != null)
-        {
-            var messages = (String[]) event.getData();
-            for (var message : messages)
-            {
-                System.out.println(message);
-            }
-        }
-        System.out.println("Message sent");
-        return null;
-    }
-
-    private Event processFailure(FailureEvent event)
+    private void processFailure(FailureEvent event)
     {
         System.out.println(event.getUserToken() + event.describe());
-        return null;
     }
 }
