@@ -10,6 +10,10 @@ public class CheckMessagesEvent extends MessageEvent
     @Getter
     private String[] _messages = null;
 
+    @Setter
+    @Getter
+    private int _oldMessagesAmount = 0;
+
     public CheckMessagesEvent(int id, IUserToken token)
     {
         this(token, ReceiverType.Id);

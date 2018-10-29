@@ -10,25 +10,13 @@ import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.function.Function;
 
 public class VkCommunityModel extends VkModel
 {
     private final VkApiClient _vk;
     private final GroupActor _actor;
     private final HashSet<IUser> _users = new HashSet<>();
-    private final Map<Class, Function<Event, Event>> _eventActionMapping = new HashMap<>()
-    {
-        {
-            put(UserCreationEvent.class, (event) -> addUser((UserCreationEvent) event));
-            put(SendMessageEvent.class, (event) -> sendMessage((SendMessageEvent) event));
-            put(CheckMessagesEvent.class, (event) -> checkMessages((CheckMessagesEvent) event));
-
-        }
-    };
 
     public VkCommunityModel()
     {
@@ -44,9 +32,10 @@ public class VkCommunityModel extends VkModel
         try
         {
             var id = getId(event);
-            var history = _vk.messages().getHistory(_actor).userId(id).offset(-7).startMessageId(-1).count(50).execute();
+            var history = _vk.messages().getHistory(_actor).userId(id).count(50).execute();
             var unreadAmount = history.getUnread();
-            var messages = history.getItems().stream().limit(unreadAmount).map(Message::getBody).toArray(String[]::new);
+            unreadAmount = unreadAmount == null ? 0 : unreadAmount;
+            var messages = history.getItems().stream().limit(unreadAmount + event.getOldMessagesAmount()).map(Message::getBody).toArray(String[]::new);
             event.setMessages(messages);
             return event;
         } catch (ApiException | ClientException e)
