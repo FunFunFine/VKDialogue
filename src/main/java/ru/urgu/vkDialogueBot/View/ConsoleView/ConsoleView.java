@@ -1,6 +1,7 @@
 package ru.urgu.vkDialogueBot.View.ConsoleView;
 
 
+import org.jetbrains.annotations.NotNull;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.CheckMessagesEvent;
@@ -26,13 +27,11 @@ public class ConsoleView implements IView
             put(CheckMessagesEvent.class, event -> processCheckMessages((CheckMessagesEvent) event));
             put(FailureEvent.class, event -> processFailure((FailureEvent) event));
         }
-
     };
 
     public ConsoleView()
     {
         _user = new SimpleUserToken(5463728);
-        var a = _user.getHash();
     }
 
     private void processCheckMessages(CheckMessagesEvent event)
@@ -58,27 +57,34 @@ public class ConsoleView implements IView
     private Event parseCommand(String command)
     {
         var fields = command.toLowerCase().split(" ");
+        var doesIdExists = _user.getCurrentResponderId() != -1;
         if (command.toLowerCase().equals("help"))
         {
-            System.out.println("send *id* *message* - отправить сообщение пользователю с id");
-            System.out.println("read *id* - прочитать последние сообщения пользователя с id");
-            System.out.println("exit - выход");
+            ShowHelp();
         }
         else if (fields[0].toLowerCase().equals("send"))
         {
-            var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
-            var id = Integer.parseInt(fields[1]);
-            var messageBuilder = new StringBuilder();
-            for (var i = 2; i < fields.length; i++)
+            if (!doesIdExists)
             {
-                messageBuilder.append(fields[i]).append(" ");
+                System.out.println("Нужно сделать set *id*");
+                return null;
             }
-            return new SendMessageEvent(id, headline + messageBuilder.toString(), _user);
+            return SendMessage(fields);
         }
         else if (fields[0].toLowerCase().equals("read"))
         {
-            var id = Integer.parseInt(fields[1]);
-            return new CheckMessagesEvent(id, _user);
+            if (!doesIdExists)
+            {
+                System.out.println("Нужно сделать set *id*");
+                return null;
+            }
+            var event = new CheckMessagesEvent(_user.getCurrentResponderId(), _user);
+            event.setOldMessagesAmount(10);
+            return event;
+        }
+        else if (fields[0].toLowerCase().equals("set") || fields[0].toLowerCase().equals("change"))
+        {
+            _user.setCurrentResponderId(Integer.parseInt(fields[1]));
         }
         else if (command.toLowerCase().equals("exit"))
         {
@@ -90,6 +96,28 @@ public class ConsoleView implements IView
             System.out.println("Я не знаю такую команду");
         }
         return null;
+    }
+
+
+    @NotNull
+    private Event SendMessage(String[] fields)
+    {
+        var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
+        var messageBuilder = new StringBuilder();
+        for (var i = 1; i < fields.length; i++)
+        {
+            messageBuilder.append(fields[i]).append(" ");
+        }
+        return new SendMessageEvent(_user.getCurrentResponderId(), headline + messageBuilder.toString(), _user);
+    }
+
+    private void ShowHelp()
+    {
+        System.out.println("send *message* - отправить сообщение пользователю в текущий диалог");
+        System.out.println("create *id* - создать диалог с пользователем *id*");
+        System.out.println("set *id* - переключиться на диалог с пользователем *id*");
+        System.out.println("read *n* - прочитать все новые + n старых сообщений из текущего диалога (default(n) = 10)");
+        System.out.println("exit - выход");
     }
 
 
