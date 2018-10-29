@@ -1,7 +1,8 @@
 package ru.urgu.vkDialogueBot.View;
 
 import lombok.Getter;
-import ru.urgu.vkDialogueBot.Utils.Action;
+import ru.urgu.vkDialogueBot.Events.Event;
+import ru.urgu.vkDialogueBot.Utils.Func;
 
 public class Command
 {
@@ -15,9 +16,9 @@ public class Command
 //    private int _optionalFieldsCount;
 
     @Getter
-    private Action<String[]> _handler;
+    private Func<String[], Event> _handler;
 
-    public Command(String name, int fieldsCount, int optionalFieldsCount, Action<String[]> handler)
+    public Command(String name, int fieldsCount, int optionalFieldsCount, Func<String[], Event> handler)
     {
         _name = name.toLowerCase().trim();
 //        _fieldsCount = fieldsCount;

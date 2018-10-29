@@ -1,13 +1,14 @@
 package ru.urgu.vkDialogueBot.View;
 
 import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.Utils.Action;
+import ru.urgu.vkDialogueBot.Utils.Func;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandParser
 {
-    private Map<String, Action<String[]>> _commands;
+    private Map<String, Func<String[], Event>> _commands;
 
     public CommandParser(Command[] commands)
     {
@@ -30,7 +31,9 @@ public class CommandParser
             System.out.println("Неизвестная команда");
             return null;
         }
-        return null;
+        var arguments = new String[fields.length - 1];
+        System.arraycopy(fields, 1, arguments, 0, fields.length - 1);
+        return _commands.get(commandName).apply(arguments);
 
     }
 }
