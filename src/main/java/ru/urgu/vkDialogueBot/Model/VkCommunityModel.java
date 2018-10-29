@@ -47,9 +47,8 @@ public class VkCommunityModel extends VkModel
             var history = _vk.messages().getHistory(_actor).userId(id).offset(-7).startMessageId(-1).count(50).execute();
             var unreadAmount = history.getUnread();
             var messages = history.getItems().stream().limit(unreadAmount).map(Message::getBody).toArray(String[]::new);
-            var result = new SuccessEvent(event.getUserToken());
-            result.setData(messages);
-            return result;
+            event.setMessages(messages);
+            return event;
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
@@ -86,12 +85,13 @@ public class VkCommunityModel extends VkModel
         {
             var id = getId(event);
             _vk.messages().send(_actor).userId(id).message(message).execute();
+            return event;
+
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
             return new FailureEvent(event.getUserToken());
         }
-        return new SuccessEvent(event.getUserToken());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class VkCommunityModel extends VkModel
             return new FailureEvent(event.getUserToken());
         }
         _users.add(user);
-        return new SuccessEvent(event.getUserToken());
+        return event;
     }
 
 

@@ -1,9 +1,15 @@
 package ru.urgu.vkDialogueBot.Events;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class CheckMessagesEvent extends MessageEvent
 {
+    @Setter
+    @Getter
+    private String[] _messages = null;
+
     public CheckMessagesEvent(int id, IUserToken token)
     {
         this(token, ReceiverType.Id);
