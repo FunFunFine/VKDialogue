@@ -9,6 +9,9 @@ import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
 import ru.urgu.vkDialogueBot.Utils.Action;
+import ru.urgu.vkDialogueBot.Utils.Func;
+import ru.urgu.vkDialogueBot.View.Command;
+import ru.urgu.vkDialogueBot.View.CommandParser;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.*;
@@ -26,6 +29,16 @@ public class ConsoleView implements IView
             put(SendMessageEvent.class, event -> processSendMessages((SendMessageEvent) event));
             put(CheckMessagesEvent.class, event -> processCheckMessages((CheckMessagesEvent) event));
             put(FailureEvent.class, event -> processFailure((FailureEvent) event));
+        }
+    };
+    private Map<String, Func<String[], Event>> _commands = new HashMap<>()
+    {
+        {
+            put("help", fields -> ShowHelp(fields));
+            put("set", fields -> SetUser(fields));
+            put("send", fields -> SendMessage(fields));
+            put("read", fields -> ReadMessages(fields));
+            put("exit", fields -> Exit(fields));
         }
     };
 
@@ -54,54 +67,42 @@ public class ConsoleView implements IView
         return scanner.nextLine();
     }
 
-    private Event parseCommand(String command)
+    private Event Exit(String[] args)
     {
-        var fields = command.toLowerCase().trim().split(" ");
-        var doesIdExists = _user.getCurrentResponderId() != -1;
-        if (fields[0].equals("help"))
-        {
-            ShowHelp();
-        }
-        else if (fields[0].toLowerCase().equals("send"))
-        {
-            if (!doesIdExists)
-            {
-                System.out.println("Нужно сделать set *id*");
-                return null;
-            }
-            return SendMessage(fields);
-        }
-        else if (fields[0].toLowerCase().equals("read"))
-        {
-            if (!doesIdExists)
-            {
-                System.out.println("Нужно сделать set *id*");
-                return null;
-            }
-            var event = new CheckMessagesEvent(_user.getCurrentResponderId(), _user);
-            event.setOldMessagesAmount(10);
-            return event;
-        }
-        else if (fields[0].toLowerCase().equals("set") || fields[0].toLowerCase().equals("change"))
-        {
-            _user.setCurrentResponderId(Integer.parseInt(fields[1]));
-        }
-        else if (command.toLowerCase().equals("exit"))
-        {
-            System.out.println("До свидания");
-            _currentState = ConsoleViewState.Offline;
-        }
-        else
-        {
-            System.out.println("Я не знаю такую команду");
-        }
+        System.out.println("До свидания");
+        _currentState = ConsoleViewState.Offline;
         return null;
     }
 
+    private Event ReadMessages(String[] args)
+    {
+        if (args.length != 0)
+        {
+            System.out.println("Неизвестная команда");
+            return null;
+        }
+        if ( _user.getCurrentResponderId() == -1)
+        {
+            System.out.println("Нужно сделать set *id*");
+            return null;
+        }
+        var event = new CheckMessagesEvent(_user.getCurrentResponderId(), _user);
+        event.setOldMessagesAmount(10);
+        return event;
+    }
 
-    @NotNull
     private Event SendMessage(String[] fields)
     {
+        if (fields.length == 0)
+        {
+            System.out.println("Зачем посылать пустое сообщение?");
+            return null;
+        }
+        if ( _user.getCurrentResponderId() == -1)
+        {
+            System.out.println("Нужно сделать set *id*");
+            return null;
+        }
         var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
         var messageBuilder = new StringBuilder();
         for (var i = 1; i < fields.length; i++)
@@ -111,13 +112,34 @@ public class ConsoleView implements IView
         return new SendMessageEvent(_user.getCurrentResponderId(), headline + messageBuilder.toString(), _user);
     }
 
-    private void ShowHelp()
+    private Event SetUser(String[] args)
     {
+        var id = 0;
+        try
+        {
+            id = Integer.parseInt(args[0]);
+        }catch (Exception e)
+        {
+            System.out.println("Неверный id");
+            return null;
+        }
+        _user.setCurrentResponderId(id);
+        return null;
+    }
+
+    private Event ShowHelp(String[] args)
+    {
+        if (args.length != 0)
+        {
+            System.out.println("Неизвестная команда");
+            return null;
+        }
         System.out.println("send *message* - отправить сообщение пользователю в текущий диалог");
         System.out.println("create *id* - создать диалог с пользователем *id*");
         System.out.println("set *id* - переключиться на диалог с пользователем *id*");
         System.out.println("read *n* - прочитать все новые + n старых сообщений из текущего диалога (default(n) = 10)");
         System.out.println("exit - выход");
+        return null;
     }
 
 
@@ -125,6 +147,9 @@ public class ConsoleView implements IView
     public void run()
     {
         _currentState = ConsoleViewState.Started;
+        var parser = new CommandParser();
+        for (var kv: _commands.entrySet())
+            parser.addCommand(new Command(kv.getKey(), kv.getValue()));
         var scanner = new Scanner(System.in);
         while (!_currentState.equals(ConsoleViewState.Offline))
         {
@@ -141,11 +166,19 @@ public class ConsoleView implements IView
                     _currentState = ConsoleViewState.Waiting;
                     break;
             }
-            var command = parseCommand(readCommand(scanner));
-            if (command != null)
+            Event event;
+            try
             {
-                act(command);
-                notify(command);
+                event = parser.parse(readCommand(scanner));
+            }catch (UnsupportedOperationException e)
+            {
+                System.out.println("неизвестная команда");
+                continue;
+            }
+            if (event != null)
+            {
+                act(event);
+                notify(event);
             }
         }
     }

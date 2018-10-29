@@ -18,7 +18,7 @@ public class Command
     @Getter
     private Func<String[], Event> _handler;
 
-    public Command(String name, int fieldsCount, int optionalFieldsCount, Func<String[], Event> handler)
+    public Command(String name, Func<String[], Event> handler)
     {
         _name = name.toLowerCase().trim();
 //        _fieldsCount = fieldsCount;
