@@ -56,9 +56,9 @@ public class ConsoleView implements IView
 
     private Event parseCommand(String command)
     {
-        var fields = command.toLowerCase().split(" ");
+        var fields = command.toLowerCase().trim().split(" ");
         var doesIdExists = _user.getCurrentResponderId() != -1;
-        if (command.toLowerCase().equals("help"))
+        if (fields[0].equals("help"))
         {
             ShowHelp();
         }
