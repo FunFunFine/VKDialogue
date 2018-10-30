@@ -1,7 +1,6 @@
 package ru.urgu.vkDialogueBot.View;
 
 import ru.urgu.vkDialogueBot.Events.Event;
-import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Utils.Func;
 
 import java.util.HashMap;
@@ -13,11 +12,13 @@ public class CommandParser
 
     public CommandParser(Command[] commands)
     {
-        for (var command: commands)
-            _commands.put(command.getName(), command.getHandler());
+        for (var command : commands)
+        {
+            addCommand(command);
+        }
     }
 
-    public CommandParser()
+    private CommandParser()
     {
     }
 
@@ -31,18 +32,17 @@ public class CommandParser
         var fields = command.toLowerCase().trim().split(" ");
         if (fields.length == 0)
         {
-           // System.out.println("Вы ничего не напечатали");
-            throw new UnsupportedOperationException();
+            // System.out.println("Вы ничего не напечатали");
+            throw new UnsupportedOperationException("Вы ничего не напечатали");
         }
         var commandName = fields[0];
         if (!_commands.containsKey(commandName))
         {
             //System.out.println("Неизвестная команда");
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Неизвестная команда");
         }
         var arguments = new String[fields.length - 1];
         System.arraycopy(fields, 1, arguments, 0, fields.length - 1);
         return _commands.get(commandName).apply(arguments);
-
     }
 }

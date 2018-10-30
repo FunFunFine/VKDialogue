@@ -1,7 +1,5 @@
 package ru.urgu.vkDialogueBot.View.ConsoleView;
 
-
-import org.jetbrains.annotations.NotNull;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.CheckMessagesEvent;
@@ -9,7 +7,6 @@ import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
 import ru.urgu.vkDialogueBot.Utils.Action;
-import ru.urgu.vkDialogueBot.Utils.Func;
 import ru.urgu.vkDialogueBot.View.Command;
 import ru.urgu.vkDialogueBot.View.CommandParser;
 import ru.urgu.vkDialogueBot.View.IView;
@@ -31,14 +28,14 @@ public class ConsoleView implements IView
             put(FailureEvent.class, event -> processFailure((FailureEvent) event));
         }
     };
-    private Map<String, Func<String[], Event>> _commands = new HashMap<>()
+    private Set<Command> _commands = new HashSet<>()
     {
         {
-            put("help", fields -> ShowHelp(fields));
-            put("set", fields -> SetUser(fields));
-            put("send", fields -> SendMessage(fields));
-            put("read", fields -> ReadMessages(fields));
-            put("exit", fields -> Exit(fields));
+            add(new Command("help", fields -> ShowHelp(fields)));
+            add(new Command("set", fields -> SetUser(fields)));
+            add(new Command("send", fields -> SendMessage(fields)));
+            add(new Command("read", fields -> ReadMessages(fields)));
+            add(new Command("exit", fields -> Exit(fields)));
         }
     };
 
@@ -81,7 +78,7 @@ public class ConsoleView implements IView
             System.out.println("Неизвестная команда");
             return null;
         }
-        if ( _user.getCurrentResponderId() == -1)
+        if (_user.getCurrentResponderId() == -1)
         {
             System.out.println("Нужно сделать set *id*");
             return null;
@@ -98,7 +95,7 @@ public class ConsoleView implements IView
             System.out.println("Зачем посылать пустое сообщение?");
             return null;
         }
-        if ( _user.getCurrentResponderId() == -1)
+        if (_user.getCurrentResponderId() == -1)
         {
             System.out.println("Нужно сделать set *id*");
             return null;
@@ -118,7 +115,7 @@ public class ConsoleView implements IView
         try
         {
             id = Integer.parseInt(args[0]);
-        }catch (Exception e)
+        } catch (Exception e)
         {
             System.out.println("Неверный id");
             return null;
@@ -142,14 +139,11 @@ public class ConsoleView implements IView
         return null;
     }
 
-
     @Override
     public void run()
     {
         _currentState = ConsoleViewState.Started;
-        var parser = new CommandParser();
-        for (var kv: _commands.entrySet())
-            parser.addCommand(new Command(kv.getKey(), kv.getValue()));
+        var parser = new CommandParser(_commands.toArray(new Command[0]));
         var scanner = new Scanner(System.in);
         while (!_currentState.equals(ConsoleViewState.Offline))
         {
@@ -170,14 +164,13 @@ public class ConsoleView implements IView
             try
             {
                 event = parser.parse(readCommand(scanner));
-            }catch (UnsupportedOperationException e)
+            } catch (UnsupportedOperationException e)
             {
                 System.out.println("неизвестная команда");
                 continue;
             }
             if (event != null)
             {
-                act(event);
                 notify(event);
             }
         }
@@ -187,11 +180,6 @@ public class ConsoleView implements IView
     {
         System.out.println("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :)");
     }
-
-    private void act(Event command)
-    {
-    }
-
 
     @Override
     public void notify(Event event)
@@ -218,7 +206,6 @@ public class ConsoleView implements IView
     public void receiveEvent(Event event)
     {
         _eventProcessMapping.get(event.getClass()).apply(event);
-
     }
 
     private void processFailure(FailureEvent event)
