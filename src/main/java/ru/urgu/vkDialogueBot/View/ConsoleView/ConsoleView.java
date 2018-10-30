@@ -134,7 +134,7 @@ public class ConsoleView implements IView
         System.out.println("send *message* - отправить сообщение пользователю в текущий диалог");
         System.out.println("create *id* - создать диалог с пользователем *id*");
         System.out.println("set *id* - переключиться на диалог с пользователем *id*");
-        System.out.println("read *n* - прочитать все новые + n старых сообщений из текущего диалога (default(n) = 10)");
+        System.out.println("read - прочитать все новые + 10 старых сообщений из текущего диалога");
         System.out.println("exit - выход");
         return null;
     }
