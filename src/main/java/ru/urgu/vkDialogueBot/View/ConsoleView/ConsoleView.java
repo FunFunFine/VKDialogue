@@ -102,9 +102,8 @@ public class ConsoleView implements IView
         }
         var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
         var messageBuilder = new StringBuilder();
-        for (var i = 1; i < fields.length; i++)
-        {
-            messageBuilder.append(fields[i]).append(" ");
+        for (String field : fields) {
+            messageBuilder.append(field).append(" ");
         }
         return new SendMessageEvent(_user.getCurrentResponderId(), headline + messageBuilder.toString(), _user);
     }
