@@ -135,6 +135,7 @@ public class ConsoleView implements IView
         System.out.println("create *id* - создать диалог с пользователем *id*");
         System.out.println("set *id* - переключиться на диалог с пользователем *id*");
         System.out.println("read - прочитать все новые + 10 старых сообщений из текущего диалога");
+        System.out.println("funfunfine.github.io - здесь можно разрешить нам писать сообщения вам ВК");
         System.out.println("exit - выход");
         return null;
     }
