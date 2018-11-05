@@ -4,14 +4,17 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public class FailureEvent extends Event
 {
-    public FailureEvent(IUserToken token)
+    private String _reason;
+
+    public FailureEvent(IUserToken token, String reason)
     {
         super(token);
+        _reason = reason;
     }
 
     @Override
     public String describe()
     {
-        return "Беда :(";
+        return "Беда :( ::" + " " + _reason;
     }
 }

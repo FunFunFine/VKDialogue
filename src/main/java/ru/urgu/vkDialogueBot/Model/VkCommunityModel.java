@@ -18,6 +18,7 @@ public class VkCommunityModel extends VkModel
     private final VkApiClient _vk;
     private final GroupActor _actor;
     private final HashSet<IUser> _users = new HashSet<>();
+    private final VkApi _vkApi;
 
     public VkCommunityModel()
     {
@@ -34,6 +35,7 @@ public class VkCommunityModel extends VkModel
         }
         _actor = new GroupActor(172735284, accessToken);
 
+        _vkApi = new VkApi();
     }
 
     @Override
@@ -42,16 +44,13 @@ public class VkCommunityModel extends VkModel
         try
         {
             var id = getId(event);
-            var history = _vk.messages().getHistory(_actor).userId(id).count(50).execute();
-            var unreadAmount = history.getUnread();
-            unreadAmount = unreadAmount == null ? 0 : unreadAmount;
-            var messages = history.getItems().stream().limit(unreadAmount + event.getOldMessagesAmount()).map(Message::getBody).toArray(String[]::new);
+            var messages = _vkApi.checkMessage(id, 50, 10);
             event.setMessages(messages);
             return event;
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
 
@@ -65,14 +64,8 @@ public class VkCommunityModel extends VkModel
             case NameSurname:
                 return findUser(event.getName(), event.getSurname());
             case ScreenName:
-                var user = _vk.users().get(_actor).userIds(event.getScreenName()).execute().iterator().next();
-                return user.getId();
+                _vkApi.getId(event.getScreenName());
         }
-        return 0;
-    }
-
-    private int findUser(String name, String surname)
-    {
         return 0;
     }
 
@@ -83,13 +76,13 @@ public class VkCommunityModel extends VkModel
         try
         {
             var id = getId(event);
-            _vk.messages().send(_actor).userId(id).message(message).execute();
+            _vkApi.sendMessage(id, message);
             return event;
 
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
 
@@ -99,10 +92,15 @@ public class VkCommunityModel extends VkModel
         SimpleUser user = new SimpleUser(event.getUserToken());
         if (_users.contains(user))
         {
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), "User already exists");
         }
         _users.add(user);
         return event;
+    }
+
+    private int findUser(String name, String surname)
+    {
+        return 0;
     }
 
 
