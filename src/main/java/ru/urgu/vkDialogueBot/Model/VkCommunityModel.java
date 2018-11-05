@@ -1,11 +1,7 @@
 package ru.urgu.vkDialogueBot.Model;
 
-import com.vk.api.sdk.client.VkApiClient;
-import com.vk.api.sdk.client.actors.GroupActor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
-import com.vk.api.sdk.objects.messages.Message;
 import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
@@ -14,16 +10,13 @@ import java.util.HashSet;
 
 public class VkCommunityModel extends VkModel
 {
-    private final VkApiClient _vk;
-    private final GroupActor _actor;
+
     private final HashSet<IUser> _users = new HashSet<>();
+    private final VkApi _vkApi;
 
     public VkCommunityModel()
     {
-        var transportClient = HttpTransportClient.getInstance();
-        _vk = new VkApiClient(transportClient);
-        _actor = new GroupActor(172735284, "02fc3f90750ecb59d638f87b1b34eea40d92831ab3ddc00e82205002f82cdfc8bc9c85ca5bd7340672108");
-
+        _vkApi = new VkApi();
     }
 
     @Override
@@ -32,10 +25,7 @@ public class VkCommunityModel extends VkModel
         try
         {
             var id = getId(event);
-            var history = _vk.messages().getHistory(_actor).userId(id).count(50).execute();
-            var unreadAmount = history.getUnread();
-            unreadAmount = unreadAmount == null ? 0 : unreadAmount;
-            var messages = history.getItems().stream().limit(unreadAmount + event.getOldMessagesAmount()).map(Message::getBody).toArray(String[]::new);
+            var messages = _vkApi.checkMessage(id, 50, 10);
             event.setMessages(messages);
             return event;
         } catch (ApiException | ClientException e)
@@ -55,14 +45,8 @@ public class VkCommunityModel extends VkModel
             case NameSurname:
                 return findUser(event.getName(), event.getSurname());
             case ScreenName:
-                var user = _vk.users().get(_actor).userIds(event.getScreenName()).execute().iterator().next();
-                return user.getId();
+                _vkApi.getId(event.getScreenName());
         }
-        return 0;
-    }
-
-    private int findUser(String name, String surname)
-    {
         return 0;
     }
 
@@ -73,7 +57,7 @@ public class VkCommunityModel extends VkModel
         try
         {
             var id = getId(event);
-            _vk.messages().send(_actor).userId(id).message(message).execute();
+            _vkApi.sendMessage(id, message);
             return event;
 
         } catch (ApiException | ClientException e)
@@ -93,6 +77,11 @@ public class VkCommunityModel extends VkModel
         }
         _users.add(user);
         return event;
+    }
+
+    private int findUser(String name, String surname)
+    {
+        return 0;
     }
 
 
