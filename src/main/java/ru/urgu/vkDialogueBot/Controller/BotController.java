@@ -17,8 +17,9 @@ public class BotController implements IObserver, IObservable
     private final IView _gui;
     private final VkCommunityModel _model;
     private LinkedList<IObserver> _observers = new LinkedList<>();
-    private final SimpleUserToken _user;
     private CommandParser _parser = null;
+    private final SimpleUserToken _user;
+
     private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
     {
         {
