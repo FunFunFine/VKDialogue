@@ -18,7 +18,7 @@ public class VkApi implements IVkApi
         this(172735284, "02fc3f90750ecb59d638f87b1b34eea40d92831ab3ddc00e82205002f82cdfc8bc9c85ca5bd7340672108");
     }
 
-    private VkApi(int groupId, String accessToken)
+    public VkApi(int groupId, String accessToken)
     {
         var transportClient = HttpTransportClient.getInstance();
         _vk = new VkApiClient(transportClient);
