@@ -1,11 +1,16 @@
 package ru.urgu.vkDialogueBot.Model;
 
+import lombok.Value;
 import ru.urgu.vkDialogueBot.Controller.IUser;
+import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
-public class VkUser implements IUser
+@Value
+class VkUser implements IUser
 {
-    public VkUser()
-    {
+    private final IUserToken _token;
 
+    VkUser(IUserToken userToken)
+    {
+        _token = userToken;
     }
 }

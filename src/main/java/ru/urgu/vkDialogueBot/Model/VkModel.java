@@ -21,6 +21,7 @@ public abstract class VkModel
         }
     };
 
+
     protected abstract Event checkMessages(CheckMessagesEvent event);
 
     protected abstract Event sendMessage(SendMessageEvent event);
