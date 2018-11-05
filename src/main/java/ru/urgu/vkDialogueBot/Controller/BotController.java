@@ -2,10 +2,7 @@ package ru.urgu.vkDialogueBot.Controller;
 
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
-import ru.urgu.vkDialogueBot.Events.CheckMessagesEvent;
-import ru.urgu.vkDialogueBot.Events.FailureEvent;
-import ru.urgu.vkDialogueBot.Events.GetHelpEvent;
-import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
+import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
 import ru.urgu.vkDialogueBot.View.IView;
 
