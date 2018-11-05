@@ -31,7 +31,7 @@ public class VkCommunityModel extends VkModel
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
 
@@ -63,7 +63,7 @@ public class VkCommunityModel extends VkModel
         } catch (ApiException | ClientException e)
         {
             System.out.println(e);
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class VkCommunityModel extends VkModel
         SimpleUser user = new SimpleUser(event.getUserToken());
         if (_users.contains(user))
         {
-            return new FailureEvent(event.getUserToken());
+            return new FailureEvent(event.getUserToken(), "User already exists");
         }
         _users.add(user);
         return event;

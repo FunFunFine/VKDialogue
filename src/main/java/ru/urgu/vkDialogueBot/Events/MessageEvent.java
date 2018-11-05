@@ -1,18 +1,13 @@
 package ru.urgu.vkDialogueBot.Events;
 
-import lombok.experimental.NonFinal;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
 public abstract class MessageEvent extends Event
 {
     private final ReceiverType _receiverType;
-    @NonFinal
     String _screenName = null;
-    @NonFinal
     String _name = null;
-    @NonFinal
     String _surname = null;
-    @NonFinal
     int _id = 0;
 
     MessageEvent(IUserToken token, ReceiverType receiverType)
