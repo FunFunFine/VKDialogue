@@ -40,6 +40,7 @@ public class BotController implements IObserver, IObservable
     @Override
     public void notify(Event event)
     {
+        _gui.receiveEvent(event);
         for (var observer : _observers)
         {
             observer.receiveEvent(event);
