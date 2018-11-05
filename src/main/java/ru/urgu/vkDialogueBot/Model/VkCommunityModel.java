@@ -3,20 +3,18 @@ package ru.urgu.vkDialogueBot.Model;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import ru.urgu.vkDialogueBot.Controller.IUser;
-import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
 
 import java.util.HashSet;
 
 public class VkCommunityModel extends VkModel
 {
-
     private final HashSet<IUser> _users = new HashSet<>();
-    private final VkApi _vkApi;
+    private final IVkApi _vkApi;
 
-    public VkCommunityModel()
+    public VkCommunityModel(IVkApi vkApi)
     {
-        _vkApi = new VkApi();
+        _vkApi = vkApi;
     }
 
     @Override
@@ -30,7 +28,6 @@ public class VkCommunityModel extends VkModel
             return event;
         } catch (ApiException | ClientException e)
         {
-            System.out.println(e);
             return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
@@ -42,8 +39,6 @@ public class VkCommunityModel extends VkModel
         {
             case Id:
                 return event.getId();
-            case NameSurname:
-                return findUser(event.getName(), event.getSurname());
             case ScreenName:
                 _vkApi.getId(event.getScreenName());
         }
@@ -70,7 +65,7 @@ public class VkCommunityModel extends VkModel
     @Override
     protected Event addUser(UserCreationEvent event)
     {
-        SimpleUser user = new SimpleUser(event.getUserToken());
+        IUser user = new VkUser(event.getUserToken());
         if (_users.contains(user))
         {
             return new FailureEvent(event.getUserToken(), "User already exists");
@@ -78,11 +73,4 @@ public class VkCommunityModel extends VkModel
         _users.add(user);
         return event;
     }
-
-    private int findUser(String name, String surname)
-    {
-        return 0;
-    }
-
-
 }
