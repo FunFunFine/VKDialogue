@@ -2,7 +2,7 @@ package ru.urgu.vkDialogueBot.Events;
 
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
-public abstract class Event
+public abstract class Event implements Signal
 {
     private IUserToken _userToken;
 
