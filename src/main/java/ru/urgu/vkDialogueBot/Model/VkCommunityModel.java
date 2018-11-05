@@ -10,6 +10,7 @@ import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Controller.SimpleUser;
 import ru.urgu.vkDialogueBot.Events.*;
 
+import java.io.*;
 import java.util.HashSet;
 
 public class VkCommunityModel extends VkModel
@@ -22,7 +23,16 @@ public class VkCommunityModel extends VkModel
     {
         var transportClient = HttpTransportClient.getInstance();
         _vk = new VkApiClient(transportClient);
-        _actor = new GroupActor(172735284, "02fc3f90750ecb59d638f87b1b34eea40d92831ab3ddc00e82205002f82cdfc8bc9c85ca5bd7340672108");
+        var accessToken = "";
+        try
+        {
+            var reader = new BufferedReader(new FileReader("passwords.config"));
+            accessToken = reader.readLine().split("=")[1];
+        }catch (IOException e)
+        {
+            System.out.println(e);
+        }
+        _actor = new GroupActor(172735284, accessToken);
 
     }
 

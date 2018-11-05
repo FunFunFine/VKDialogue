@@ -15,10 +15,10 @@ import java.util.*;
 
 public class ConsoleView implements IView
 {
-    private final List<IObserver> _observers = new LinkedList<>();
-    private final SimpleUserToken _user;
     // Антон - send 147985909
     // Саша - send 161856178
+    private final List<IObserver> _observers = new LinkedList<>();
+    private final SimpleUserToken _user;
     private ConsoleViewState _currentState = ConsoleViewState.Offline;
     private Map<Class, Action<Event>> _eventProcessMapping = new HashMap<>()
     {
