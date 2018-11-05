@@ -36,21 +36,19 @@ public class BotController implements IObserver, IObservable
     };
 
 
-    private Set<Command> _commands = new HashSet<>()
-    {
-        {
-            add(new Command("help", fields -> ShowHelp(fields)));
-            add(new Command("set", fields -> SetUser(fields)));
-            add(new Command("send", fields -> SendMessage(fields)));
-            add(new Command("read", fields -> ReadMessages(fields)));
-            add(new Command("exit", fields -> Exit()));
-        }
-    };
-
-
     public BotController(VkCommunityModel vkModel, IView gui)
     {
         _parser = new CommandParser();
+        Set<Command> _commands = new HashSet<>()
+        {
+            {
+                add(new Command("help", fields -> ShowHelp(fields)));
+                add(new Command("set", fields -> SetUser(fields)));
+                add(new Command("send", fields -> SendMessage(fields)));
+                add(new Command("read", fields -> ReadMessages(fields)));
+                add(new Command("exit", fields -> Exit()));
+            }
+        };
         for (var command : _commands)
         {
             _parser.addCommand(command);
@@ -184,6 +182,7 @@ public class BotController implements IObserver, IObservable
             for (var s : ((CheckMessagesEvent) response).getMessages())
             {
                 builder.append(s);
+                builder.append("\n");
             }
             responseSignal = new UserIOSignal(builder.toString());
         }
