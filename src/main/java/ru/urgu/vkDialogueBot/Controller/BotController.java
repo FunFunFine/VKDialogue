@@ -4,21 +4,37 @@ import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
-import ru.urgu.vkDialogueBot.View.Command;
 import ru.urgu.vkDialogueBot.View.IView;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import lombok.Getter;
+import java.util.*;
+import java.util.function.Function;
 
 public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
     private final VkCommunityModel _model;
     private LinkedList<IObserver> _observers = new LinkedList<>();
-    private final CommandParser _parser;
+    private CommandParser _parser = null;
     private final SimpleUserToken _user;
+
+    private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
+    {
+        {
+            put(GUIStartedSignal.class, signal -> greetUser());
+            put(UserIOSignal.class, signal -> {
+                var text = ((UserIOSignal) signal).getText();
+                var parsedSignal = _parser.parse(text);
+                return _eventActionMapping.get(parsedSignal.getClass()).apply(parsedSignal);
+            });
+            put(GetHelpEvent.class, event -> processHelp((GetHelpEvent) event));
+            put(GUIExitSignal.class, event -> event);
+            put(SendMessageEvent.class, (event) -> processSend((SendMessageEvent) event));
+            put(CheckMessagesEvent.class, (event) -> processCheck((CheckMessagesEvent) event));
+            put(FailureEvent.class, event -> event);
+            put(SetUserEvent.class, event -> processSet((SetUserEvent) event));
+        }
+    };
+
 
     private Set<Command> _commands = new HashSet<>()
     {
@@ -27,22 +43,41 @@ public class BotController implements IObserver, IObservable
             add(new Command("set", fields -> SetUser(fields)));
             add(new Command("send", fields -> SendMessage(fields)));
             add(new Command("read", fields -> ReadMessages(fields)));
-            add(new Command("exit", fields -> Exit(fields)));
+            add(new Command("exit", fields -> Exit()));
         }
     };
 
-    private Signal Exit(String[] args)
+
+    public BotController(VkCommunityModel vkModel, IView gui)
     {
-        //System.out.println("До свидания");
+        _parser = new CommandParser();
+        for (var command : _commands)
+        {
+            _parser.addCommand(command);
+        }
+        _model = vkModel;
+        _gui = gui;
+        gui.addObserver(this);
+        this.addObserver(gui);
+
+        _user = new SimpleUserToken(5463728);
+    }
+
+    private Signal Exit()
+    {
         return new GUIExitSignal();
     }
 
     private Signal ReadMessages(String[] args)
     {
         if (args.length != 0)
-            return new UserIOSignal("Неизвестная команда");
+        {
+            return new FailureEvent(null, "Неизвестная команда");
+        }
         if (_user.getCurrentResponderId() == -1)
-            return new UserIOSignal("Нужно сделать set *id*");
+        {
+            return new FailureEvent(null, "Нужно сделать set *id*");
+        }
         var event = new CheckMessagesEvent(_user.getCurrentResponderId(), _user);
         event.setOldMessagesAmount(10);
         return event;
@@ -51,12 +86,17 @@ public class BotController implements IObserver, IObservable
     private Signal SendMessage(String[] fields)
     {
         if (fields.length == 0)
-            return new UserIOSignal("Зачем посылать пустое сообщение?");
+        {
+            return new FailureEvent(null, "Зачем посылать пустое сообщение?");
+        }
         if (_user.getCurrentResponderId() == -1)
-            return new UserIOSignal("Нужно сделать set *id*");
+        {
+            return new FailureEvent(null, "Нужно сделать set *id*");
+        }
         var headline = "Сообщение пользователя " + _user.getHash() + ":\n";
         var messageBuilder = new StringBuilder();
-        for (String field : fields) {
+        for (String field : fields)
+        {
             messageBuilder.append(field).append(" ");
         }
         return new SendMessageEvent(_user.getCurrentResponderId(), headline + messageBuilder.toString(), _user);
@@ -77,7 +117,18 @@ public class BotController implements IObserver, IObservable
                     "funfunfine.github.io - здесь можно разрешить нам писать сообщения вам ВК\n" +
                     "exit - выход\n";
         }
-        return new UserIOSignal(message);
+        return new GetHelpEvent(null, message);
+    }
+
+    private Signal processHelp(GetHelpEvent event)
+    {
+        return new UserIOSignal(event.getMessage());
+    }
+
+    private Signal processSet(SetUserEvent event)
+    {
+        _user.setCurrentResponderId(event.getId());
+        return new UserIOSignal("Готово!");
     }
 
     private Signal SetUser(String[] args)
@@ -88,20 +139,9 @@ public class BotController implements IObserver, IObservable
             id = Integer.parseInt(args[0]);
         } catch (Exception e)
         {
-            return new UserIOSignal("Неверный id");
+            return new FailureEvent(null, "Неверный id");
         }
-        _user.setCurrentResponderId(id);
-        return null;
-    }
-
-    public BotController(VkCommunityModel vkModel, IView gui)
-    {
-        _parser = new CommandParser();
-        for (var command:_commands)
-            _parser.addCommand(command);
-        _model = vkModel;
-        _gui = gui;
-        _user = new SimpleUserToken(5463728);
+        return new SetUserEvent(null, id);
     }
 
 
@@ -115,64 +155,47 @@ public class BotController implements IObserver, IObservable
         return new UserIOSignal("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :)");
     }
 
-    private void processSend(Event signal)
+    private Signal processSend(SendMessageEvent signal)
     {
-        var response = _model.processEvent(signal);
+        var response = _model.sendMessage(signal);
         UserIOSignal responseSignal;
         if (response instanceof FailureEvent)
+        {
             responseSignal = new UserIOSignal(response.describe());
+        }
         else
+        {
             responseSignal = new UserIOSignal("Отправлено");
-        notify(responseSignal);
+        }
+        return (responseSignal);
     }
 
-    private void processCheck(Event signal)
+    private Signal processCheck(CheckMessagesEvent signal)
     {
-        var response = _model.processEvent(signal);
+        var response = _model.checkMessages(signal);
         UserIOSignal responseSignal;
         if (response instanceof FailureEvent)
+        {
             responseSignal = new UserIOSignal(response.describe());
-        else {
+        }
+        else
+        {
             var builder = new StringBuilder();
-            for(var s:((CheckMessagesEvent) response).getMessages())
+            for (var s : ((CheckMessagesEvent) response).getMessages())
             {
                 builder.append(s);
             }
             responseSignal = new UserIOSignal(builder.toString());
         }
-        notify(responseSignal);
+        return (responseSignal);
     }
 
-    private void parseText(String text)
-    {
-        var signal = _parser.parse(text);
-        if (signal == null)
-            return;
-        if (signal instanceof UserIOSignal)
-            notify(signal);
-        else if (signal instanceof SendMessageEvent)
-        {
-            processSend((SendMessageEvent)signal);
-        }
-        else if(signal instanceof GUIExitSignal)
-        {
-            notify(signal);
-        }
-        else if(signal instanceof CheckMessagesEvent)
-        {
-            processCheck((CheckMessagesEvent)signal);
-        }
-    }
 
     @Override
-    public void receive(Signal event)
+    public void receive(Signal signal)
     {
-        if (event instanceof GUIStartedSignal)
-            notify(greetUser());
-        else if (event instanceof UserIOSignal)
-            parseText(((UserIOSignal)event).getText());
-        //var resultEvent = _model.processEvent(event);
-        //notify(resultEvent);
+        var result = _eventActionMapping.get(signal.getClass()).apply(signal);
+        notify(result);
     }
 
     @Override

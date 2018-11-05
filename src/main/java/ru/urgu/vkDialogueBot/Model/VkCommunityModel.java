@@ -36,7 +36,7 @@ public class VkCommunityModel extends VkModel
     }
 
     @Override
-    protected Event checkMessages(CheckMessagesEvent event)
+    public Event checkMessages(CheckMessagesEvent event)
     {
         try
         {
@@ -65,7 +65,7 @@ public class VkCommunityModel extends VkModel
     }
 
     @Override
-    protected Event sendMessage(SendMessageEvent event)
+    public Event sendMessage(SendMessageEvent event)
     {
         var message = event.getMessage();
         try
@@ -82,7 +82,7 @@ public class VkCommunityModel extends VkModel
     }
 
     @Override
-    protected Event addUser(UserCreationEvent event)
+    public Event addUser(UserCreationEvent event)
     {
         var user = new VkUser(event.getUserToken());
         if (_users.contains(user))

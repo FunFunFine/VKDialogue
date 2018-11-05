@@ -3,20 +3,20 @@ package ru.urgu.vkDialogueBot.Events;
 import lombok.Getter;
 import ru.urgu.vkDialogueBot.Controller.IUserToken;
 
-public class FailureEvent extends Event
+public class SetUserEvent extends Event
 {
     @Getter
-    private String _reason;
+    private int _id;
 
-    public FailureEvent(IUserToken token, String reason)
+    public SetUserEvent(IUserToken token, int id)
     {
         super(token);
-        _reason = reason;
+        _id = id;
     }
 
     @Override
     public String describe()
     {
-        return "Беда :( ::" + " " + _reason;
+        return null;
     }
 }

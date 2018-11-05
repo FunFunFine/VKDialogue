@@ -11,8 +11,6 @@ public class Main
     {
         var gui = new ConsoleView();
         var controller = new BotController(new VkCommunityModel(), gui);
-        gui.addObserver(controller);
-        controller.addObserver(gui);
         controller.runBot();
     }
 }

@@ -4,7 +4,9 @@ import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.View.IView;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class ConsoleView implements IView
 {
@@ -71,8 +73,18 @@ public class ConsoleView implements IView
     public void receive(Signal event)
     {
         if (event instanceof UserIOSignal)
-            writeText(((UserIOSignal)event).getText());
+        {
+            var ioSignal = (UserIOSignal) event;
+            writeText(ioSignal.getText());
+        }
+        if (event instanceof FailureEvent)
+        {
+            var ioSignal = (FailureEvent) event;
+            writeText(ioSignal.getReason());
+        }
         else if (event instanceof GUIExitSignal)
+        {
             _currentState = ConsoleViewState.Offline;
+        }
     }
 }
