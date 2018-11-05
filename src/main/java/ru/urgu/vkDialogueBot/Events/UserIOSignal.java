@@ -5,10 +5,10 @@ import lombok.Getter;
 public class UserIOSignal implements Signal
 {
     @Getter
-    private String text;
+    private String _text;
 
     public UserIOSignal(String text)
     {
-        this.text = text;
+        _text = text;
     }
 }
