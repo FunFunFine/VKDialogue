@@ -19,6 +19,8 @@ public class BotController implements IObserver, IObservable
     {
         _model = vkModel;
         _gui = gui;
+        gui.addObserver(this);
+        this.addObserver(gui);
     }
 
 
