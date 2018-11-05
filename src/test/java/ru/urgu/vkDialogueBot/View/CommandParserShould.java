@@ -2,6 +2,7 @@ package ru.urgu.vkDialogueBot.View;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.urgu.vkDialogueBot.Controller.CommandParser;
 import ru.urgu.vkDialogueBot.Events.Event;
 
 import java.util.HashSet;

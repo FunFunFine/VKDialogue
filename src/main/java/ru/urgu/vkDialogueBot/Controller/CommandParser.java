@@ -1,14 +1,16 @@
-package ru.urgu.vkDialogueBot.View;
+package ru.urgu.vkDialogueBot.Controller;
 
 import ru.urgu.vkDialogueBot.Events.Event;
+import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.Utils.Func;
+import ru.urgu.vkDialogueBot.View.Command;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandParser
 {
-    private Map<String, Func<String[], Event>> _commands = new HashMap<>();
+    private Map<String, Func<String[], Signal>> _commands = new HashMap<>();
 
     public CommandParser(Command[] commands)
     {
@@ -18,7 +20,7 @@ public class CommandParser
         }
     }
 
-    private CommandParser()
+    public CommandParser()
     {
     }
 
@@ -27,7 +29,7 @@ public class CommandParser
         _commands.put(command.getName(), command.getHandler());
     }
 
-    public Event parse(String command)
+    public Signal parse(String command)
     {
         var fields = command.toLowerCase().trim().split(" ");
         if (fields.length == 0)
