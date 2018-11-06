@@ -3,8 +3,6 @@ package ru.urgu.vkDialogueBot.Controller;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
-import ru.urgu.vkDialogueBot.Model.Command;
-import ru.urgu.vkDialogueBot.Model.CommandParser;
 import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
 import ru.urgu.vkDialogueBot.View.IView;
 
@@ -15,10 +13,9 @@ public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
     private final VkCommunityModel _model;
+    private final SimpleUserToken _user;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
-    private final SimpleUserToken _user;
-
     private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
     {
         {
@@ -120,11 +117,10 @@ public class BotController implements IObserver, IObservable
     private Signal processSend(SendMessageEvent signal)
     {
         var response = _model.sendMessage(signal);
-        UserIOSignal responseSignal;
+        Signal responseSignal;
         if (response instanceof FailureEvent)
         {
-            var failure = (FailureEvent) response;
-            responseSignal = new UserIOSignal(failure.getReason());
+            responseSignal = response;
         }
         else
         {
@@ -136,11 +132,10 @@ public class BotController implements IObserver, IObservable
     private Signal processCheck(CheckMessagesEvent signal)
     {
         var response = _model.checkMessages(signal);
-        UserIOSignal responseSignal;
+        Signal responseSignal;
         if (response instanceof FailureEvent)
         {
-            var failure = (FailureEvent) response;
-            responseSignal = new UserIOSignal(failure.getReason());
+            responseSignal = response;
         }
         else
         {

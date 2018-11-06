@@ -1,4 +1,4 @@
-package ru.urgu.vkDialogueBot.Model;
+package ru.urgu.vkDialogueBot.Controller;
 
 import lombok.Getter;
 import ru.urgu.vkDialogueBot.Events.Signal;

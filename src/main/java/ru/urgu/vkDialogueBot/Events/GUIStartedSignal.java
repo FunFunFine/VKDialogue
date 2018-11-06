@@ -1,3 +1,5 @@
 package ru.urgu.vkDialogueBot.Events;
 
-public class GUIStartedSignal  implements Signal { }
+public class GUIStartedSignal implements Signal
+{
+}

@@ -5,34 +5,16 @@ import com.vk.api.sdk.exceptions.ClientException;
 import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Events.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashSet;
 
 public class VkCommunityModel extends VkModel
 {
     private final HashSet<IUser> _users = new HashSet<>();
-    private final VkApi _vkApi;
+    private final IVkApi _vkApi;
 
-    public VkCommunityModel()
+    public VkCommunityModel(IVkApi vkApi)
     {
-        String accessToken = getTokenFromCfg();
-        _vkApi = new VkApi(172735284, accessToken);
-    }
-
-    private String getTokenFromCfg()
-    {
-        var accessToken = "";
-        try
-        {
-            var reader = new BufferedReader(new FileReader("passwords.config"));
-            accessToken = reader.readLine().split("=")[1];
-        } catch (IOException e)
-        {
-            return null;
-        }
-        return accessToken;
+        _vkApi = vkApi;
     }
 
     @Override
@@ -75,6 +57,7 @@ public class VkCommunityModel extends VkModel
 
         } catch (ApiException | ClientException e)
         {
+            var m = e.getMessage();
             return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }

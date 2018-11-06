@@ -2,7 +2,6 @@ package ru.urgu.vkDialogueBot.View.TelegramView;
 
 
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
-import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.View.IView;
 

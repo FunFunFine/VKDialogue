@@ -13,9 +13,9 @@ public class VkApi implements IVkApi
     private final VkApiClient _vk;
     private final GroupActor _actor;
 
-    public VkApi()
+    public VkApi(String token)
     {
-        this(172735284, "02fc3f90750ecb59d638f87b1b34eea40d92831ab3ddc00e82205002f82cdfc8bc9c85ca5bd7340672108");
+        this(172735284, token);
     }
 
     public VkApi(int groupId, String accessToken)
@@ -25,6 +25,7 @@ public class VkApi implements IVkApi
         _actor = new GroupActor(groupId, accessToken);
 
     }
+
 
     @Override
     public void sendMessage(int id, String message) throws ClientException, ApiException

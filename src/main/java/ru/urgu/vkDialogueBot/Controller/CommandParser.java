@@ -1,4 +1,4 @@
-package ru.urgu.vkDialogueBot.Model;
+package ru.urgu.vkDialogueBot.Controller;
 
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Utils.Func;
@@ -53,7 +53,6 @@ public class CommandParser
         }
         return new GetHelpEvent(null, message);
     }
-
 
 
     public void addCommand(Command command)
