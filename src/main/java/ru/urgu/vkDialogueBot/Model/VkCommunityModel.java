@@ -30,7 +30,7 @@ public class VkCommunityModel extends VkModel
             accessToken = reader.readLine().split("=")[1];
         } catch (IOException e)
         {
-            System.out.println(e.getMessage());
+            return null;
         }
         return accessToken;
     }
@@ -46,7 +46,6 @@ public class VkCommunityModel extends VkModel
             return event;
         } catch (ApiException | ClientException e)
         {
-            System.out.println(e);
             return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
@@ -76,7 +75,6 @@ public class VkCommunityModel extends VkModel
 
         } catch (ApiException | ClientException e)
         {
-            System.out.println(e);
             return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }
