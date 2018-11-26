@@ -36,7 +36,7 @@ public class CommandParserShould
     @Before
     public void setUp()
     {
-        parser = new CommandParser(_commands.toArray(new Command[0]));
+        //parser = new CommandParser(_commands.toArray(new Command[0]));
     }
 
 

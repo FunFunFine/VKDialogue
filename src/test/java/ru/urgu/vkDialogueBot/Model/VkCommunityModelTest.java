@@ -8,7 +8,7 @@ public class VkCommunityModelTest
     @Test
     public void processEvent()
     {
-        var vkModel = new VkCommunityModel();
+        //var vkModel = new VkCommunityModel();
 
     }
 }
