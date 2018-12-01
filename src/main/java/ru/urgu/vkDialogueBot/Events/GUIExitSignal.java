@@ -7,4 +7,10 @@ public class GUIExitSignal implements Signal
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

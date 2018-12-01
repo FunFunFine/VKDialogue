@@ -25,4 +25,10 @@ public class GetHelpEvent extends Event
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }
