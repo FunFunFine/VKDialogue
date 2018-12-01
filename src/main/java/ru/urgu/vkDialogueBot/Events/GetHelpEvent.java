@@ -14,21 +14,10 @@ public class GetHelpEvent extends Event
         this._message = message;
     }
 
+
     @Override
     public String describe()
     {
-        return null;
-    }
-
-    @Override
-    public Long getTelegramId()
-    {
-        return null;
-    }
-
-    @Override
-    public void setTelegramId(Long chatId)
-    {
-
+        return this.getClass().getName();
     }
 }

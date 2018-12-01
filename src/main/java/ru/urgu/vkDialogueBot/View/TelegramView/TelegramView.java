@@ -1,7 +1,6 @@
 package ru.urgu.vkDialogueBot.View.TelegramView;
 
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -119,44 +118,47 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void onUpdateReceived(Update update)
     {
-        if (update.hasMessage() && update.getMessage().hasText())
+        var chatId = update.getMessage().getChatId();
+        if (!update.hasMessage() || !update.getMessage().hasText())
         {
-            var messageText = update.getMessage().getText();
-            var chatId = update.getMessage().getChatId();
-            Signal signal;
+            sendMessage(":)", chatId);
+            sendKeyboard(chatId);
+            return;
+        }
+        var messageText = update.getMessage().getText();
+        Signal signal;
 
-            synchronized (_lastMessages)
+        synchronized (_lastMessages)
+        {
+            switch (messageText)
             {
-                switch (messageText)
-                {
-                    case ("/start"):
-                        sendKeyboard(chatId);
-                        return;
-                    case ("send"):
-                    case ("set"):
-                        _lastMessages.put(chatId, messageText);
-                        sendMessage("Аргументы пажаласта", chatId);
-                        return;
-                    default:
-                        signal = new GUIStartedSignal();
-                        signal.setTelegramId(chatId);
-                        notify(signal);
-                        break;
-                }
-                var lastMessage = _lastMessages.get(chatId);
-                switch (lastMessage)
-                {
-                    case ("send"):
-                        signal = new UserIOSignal("send " + messageText);
-                        signal.setTelegramId(chatId);
-                        notify(signal);
-                        break;
-                    case ("set"):
-                        signal = new UserIOSignal("set " + messageText);
-                        signal.setTelegramId(chatId);
-                        notify(signal);
-                        break;
-                }
+                case ("/start"):
+                    sendKeyboard(chatId);
+                    return;
+                case ("send"):
+                case ("set"):
+                    _lastMessages.put(chatId, messageText);
+                    sendMessage("Аргументы пажаласта", chatId);
+                    return;
+                default:
+                    signal = new GUIStartedSignal();
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
+            }
+            var lastMessage = _lastMessages.get(chatId);
+            switch (lastMessage)
+            {
+                case ("send"):
+                    signal = new UserIOSignal("send " + messageText);
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
+                case ("set"):
+                    signal = new UserIOSignal("set " + messageText);
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
             }
         }
     }

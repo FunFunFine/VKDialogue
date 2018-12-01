@@ -14,13 +14,14 @@ public class SetUserEvent extends Event
         _id = id;
     }
 
+
+    private Long chatId;
+
     @Override
     public String describe()
     {
-        return null;
+        return SetUserEvent.class.getName();
     }
-
-    private Long chatId;
 
     @Override
     public Long getTelegramId()
