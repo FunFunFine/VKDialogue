@@ -15,15 +15,17 @@ public class UserCreationEvent extends Event
         return "Создаем пользователя";
     }
 
+    private Long chatId;
+
     @Override
     public Long getTelegramId()
     {
-        return null;
+        return chatId;
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
-
+        this.chatId = chatId;
     }
 }

@@ -27,7 +27,7 @@ public class GetHelpEvent extends Event
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
 
     }

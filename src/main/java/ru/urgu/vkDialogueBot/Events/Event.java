@@ -18,15 +18,17 @@ public abstract class Event implements Signal
 
     public abstract String describe();
 
+    private Long chatId;
+
     @Override
     public Long getTelegramId()
     {
-        return null;
+        return chatId;
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
-
+        this.chatId = chatId;
     }
 }

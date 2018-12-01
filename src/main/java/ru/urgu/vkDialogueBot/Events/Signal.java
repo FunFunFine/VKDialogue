@@ -4,5 +4,5 @@ public interface Signal
 {
     Long getTelegramId();
 
-    void setTelegramId();
+    void setTelegramId(Long chatId);
 }

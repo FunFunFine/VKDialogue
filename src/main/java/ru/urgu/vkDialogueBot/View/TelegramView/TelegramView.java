@@ -93,11 +93,13 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var ioSignal = (UserIOSignal) event;
             sendMessage(ioSignal.getText(), event.getTelegramId());
+            sendKeyboard(event.getTelegramId());
         }
         if (event instanceof FailureEvent)
         {
             var ioSignal = (FailureEvent) event;
             sendMessage(ioSignal.getReason(), event.getTelegramId());
+            sendKeyboard(event.getTelegramId());
         }
     }
 
@@ -122,17 +124,55 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var messageText = update.getMessage().getText();
             var chatId = update.getMessage().getChatId();
+            Signal signal;
+
             synchronized (_lastMessages)
             {
+                switch (messageText)
+                {
+                    case ("/start"):
+                        sendKeyboard(chatId);
+                        return;
+                    case ("send"):
+                    case ("set"):
+                        _lastMessages.put(chatId, messageText);
+                        sendMessage("Аргументы пажаласта", chatId);
+                        return;
+                    default:
+                        signal = new GUIStartedSignal();
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
+                }
                 var lastMessage = _lastMessages.get(chatId);
                 switch (lastMessage)
                 {
-                    case ("/start"):
-                        var signal = new GUIStartedSignal();
-
+                    case ("send"):
+                        signal = new UserIOSignal("send " + messageText);
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
+                    case ("set"):
+                        signal = new UserIOSignal("set " + messageText);
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
                 }
             }
+        }
+    }
 
+    private void sendKeyboard(Long chatId)
+    {
+        var kb = getMainMenuKeyboard();
+        var message = new SendMessage().setChatId(chatId)
+                                       .setReplyMarkup(kb);
+        try
+        {
+            execute(message);
+        } catch (TelegramApiException e)
+        {
+            e.printStackTrace();
         }
     }
 

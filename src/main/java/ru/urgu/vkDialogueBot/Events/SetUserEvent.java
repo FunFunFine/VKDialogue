@@ -20,9 +20,17 @@ public class SetUserEvent extends Event
         return null;
     }
 
-    @Override
-    public void setTelegramId()
-    {
+    private Long chatId;
 
+    @Override
+    public Long getTelegramId()
+    {
+        return chatId;
+    }
+
+    @Override
+    public void setTelegramId(Long chatId)
+    {
+        this.chatId = chatId;
     }
 }

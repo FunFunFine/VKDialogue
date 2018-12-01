@@ -42,7 +42,7 @@ public abstract class MessageEvent extends Event
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
 
     }
