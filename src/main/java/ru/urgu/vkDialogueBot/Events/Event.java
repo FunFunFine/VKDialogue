@@ -19,7 +19,7 @@ public abstract class Event implements Signal
     public abstract String describe();
 
     @Override
-    public Long getId()
+    public Long getTelegramId()
     {
         return null;
     }

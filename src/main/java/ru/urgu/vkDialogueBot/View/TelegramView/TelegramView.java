@@ -89,12 +89,12 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         if (event instanceof UserIOSignal)
         {
             var ioSignal = (UserIOSignal) event;
-            sendMessage(ioSignal.getText());
+            sendMessage(ioSignal.getText(), event.getTelegramId());
         }
         if (event instanceof FailureEvent)
         {
             var ioSignal = (FailureEvent) event;
-            sendMessage(ioSignal.getReason());
+            sendMessage(ioSignal.getReason(), event.getTelegramId());
         }
     }
 

@@ -16,7 +16,7 @@ public class UserCreationEvent extends Event
     }
 
     @Override
-    public Long getId()
+    public Long getTelegramId()
     {
         return null;
     }

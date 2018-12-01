@@ -21,7 +21,7 @@ public class FailureEvent extends Event
     }
 
     @Override
-    public Long getId()
+    public Long getTelegramId()
     {
         return null;
     }
