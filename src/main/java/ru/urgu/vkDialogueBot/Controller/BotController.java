@@ -42,8 +42,8 @@ public class BotController implements IObserver, IObservable
         Set<Command> _commands = new HashSet<>()
         {
             {
-                add(new Command("send", (fields, i) -> SendMessageCommand(fields, i)));
-                add(new Command("read", (fields, i) -> ReadMessagesCommand(fields, i)));
+                add(new Command("отправить", (fields, i) -> SendMessageCommand(fields, i)));
+                add(new Command("прочитать", (fields, i) -> ReadMessagesCommand(fields, i)));
             }
         };
         for (var command : _commands)
@@ -70,7 +70,7 @@ public class BotController implements IObserver, IObservable
         }
         if (user.getCurrentResponderId() == -1)
         {
-            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать set *id*");
+            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
             failureEvent.setTelegramId(_currentTelegramId);
             return failureEvent;
         }
@@ -90,7 +90,7 @@ public class BotController implements IObserver, IObservable
         }
         if (user.getCurrentResponderId() == -1)
         {
-            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать set *id*");
+            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
             failureEvent.setTelegramId(_currentTelegramId);
             return failureEvent;
         }
@@ -131,7 +131,7 @@ public class BotController implements IObserver, IObservable
 
     private Signal greetUser()
     {
-        final UserIOSignal userIOSignal = new UserIOSignal("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :)");
+        final UserIOSignal userIOSignal = new UserIOSignal("Привет! Я  - Телеграмматор. Команда \"помощь\" расскажет про меня подробнее :)");
         userIOSignal.setTelegramId(_currentTelegramId);
         return userIOSignal;
     }
