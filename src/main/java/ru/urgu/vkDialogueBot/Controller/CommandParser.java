@@ -15,7 +15,6 @@ public class CommandParser
         addCommand(new Command("help", this::ShowHelpCommand));
         addCommand(new Command("set", this::SetUserCommand));
         addCommand(new Command("exit", this::ExitCommand));
-        addCommand(new Command("help", this::ShowHelpCommand));
     }
 
     private Signal ExitCommand(String[] args)
@@ -35,7 +34,6 @@ public class CommandParser
         }
         return new SetUserEvent(null, id);
     }
-
     private Signal ShowHelpCommand(String[] args)
     {
         var message = "";
