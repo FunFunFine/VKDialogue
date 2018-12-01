@@ -52,7 +52,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         keyboardFirstRow.add("отправить");
-        keyboardFirstRow.add("выбрать получателя");
+        keyboardFirstRow.add("выбрать_получателя");
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         keyboardSecondRow.add("помощь");
         keyboardSecondRow.add("прочитать");
@@ -136,12 +136,22 @@ public class TelegramView extends TelegramLongPollingBot implements IView
                     sendMessage("Аргументы пажаласта", chatId);
                     return;
                 default:
+                    var lastMessage = _lastMessages.get(chatId);
+                    if (lastMessage == null || lastMessage.equals("выбрать_получателя") || lastMessage.equals("отправить"))
+                    {
+                        break;
+                    }
                     signal = new UserIOSignal(messageText);
                     signal.setTelegramId(chatId);
                     notify(signal);
                     break;
             }
             var lastMessage = _lastMessages.get(chatId);
+            if (lastMessage == null)
+            {
+                _lastMessages.put(chatId, messageText);
+                return;
+            }
             switch (lastMessage)
             {
                 case ("отправить"):

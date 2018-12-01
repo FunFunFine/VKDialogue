@@ -37,7 +37,9 @@ public class CommandParser
             event.setTelegramId(chatId);
             return event;
         }
-        return new SetUserEvent(null, id);
+        final SetUserEvent setUserEvent = new SetUserEvent(null, id);
+        setUserEvent.setTelegramId(chatId);
+        return setUserEvent;
     }
 
     private Signal ShowHelpCommand(String[] args, Long chatId)

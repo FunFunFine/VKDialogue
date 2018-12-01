@@ -14,7 +14,7 @@ public class BotController implements IObserver, IObservable
     private final IView _gui;
     private final VkCommunityModel _model;
     private final Map<Long, SimpleUserToken> _users = new HashMap<>();
-    private long _currentTelegramId = -1;
+    private Long _currentTelegramId = -1L;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
     private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
@@ -76,6 +76,7 @@ public class BotController implements IObserver, IObservable
         }
         var event = new CheckMessagesEvent(user.getCurrentResponderId(), user);
         event.setOldMessagesAmount(10);
+        event.setTelegramId(_currentTelegramId);
         return event;
     }
 
