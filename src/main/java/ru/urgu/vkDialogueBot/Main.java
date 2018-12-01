@@ -3,7 +3,7 @@ package ru.urgu.vkDialogueBot;
 import ru.urgu.vkDialogueBot.Controller.BotController;
 import ru.urgu.vkDialogueBot.Model.VkApi;
 import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
-import ru.urgu.vkDialogueBot.View.ConsoleView.ConsoleView;
+import ru.urgu.vkDialogueBot.View.TelegramView.TelegramView;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,7 +14,7 @@ public class Main
 
     public static void main(String[] args)
     {
-        var gui = new ConsoleView();
+        var gui = new TelegramView();
         var vkApi = new VkApi(getTokenFromCfg());
         var controller = new BotController(new VkCommunityModel(vkApi), gui);
         controller.runBot();

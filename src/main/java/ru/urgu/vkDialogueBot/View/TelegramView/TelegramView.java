@@ -6,16 +6,24 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.View.IView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TelegramView extends TelegramLongPollingBot implements IView
 {
+    public TelegramView()
+    {
+        ApiContextInitializer.init();
+    }
+
     @Override
     public void run()
     {
@@ -54,6 +62,27 @@ public class TelegramView extends TelegramLongPollingBot implements IView
 
     }
 
+    private static ReplyKeyboardMarkup getMainMenuKeyboard()
+    {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        keyboardFirstRow.add("1st");
+        keyboardFirstRow.add("2nd");
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+        keyboardSecondRow.add("3d");
+        keyboardSecondRow.add("4nd");
+        keyboard.add(keyboardFirstRow);
+        keyboard.add(keyboardSecondRow);
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        return replyKeyboardMarkup;
+    }
+
     @Override
     public void onUpdateReceived(Update update)
     {
@@ -61,7 +90,9 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var messageText = update.getMessage().getText();
             var chatId = update.getMessage().getChatId();
-            var message = new SendMessage().setChatId(chatId).setText("Got it");
+            var message = new SendMessage().setChatId(chatId)
+                                           .setText(String.format("Got it %s", messageText))
+                                           .setReplyMarkup(getMainMenuKeyboard());
             try
             {
                 execute(message);
