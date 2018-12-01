@@ -19,6 +19,7 @@ public class CommandParser
 
     private Signal ExitCommand(String[] args)
     {
+
         return new GUIExitSignal();
     }
 
@@ -53,12 +54,13 @@ public class CommandParser
     }
 
 
-    public void addCommand(Command command)
+    void addCommand(Command command)
     {
         _commands.put(command.getName(), command.getHandler());
     }
 
-    public Signal parse(String command)
+
+    Signal parse(String command)
     {
         var fields = command.toLowerCase().trim().split(" ");
         if (fields.length == 0)

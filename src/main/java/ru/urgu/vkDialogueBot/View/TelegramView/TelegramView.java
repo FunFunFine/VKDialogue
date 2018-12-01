@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
-import ru.urgu.vkDialogueBot.Events.GUIStartedSignal;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.View.IView;
@@ -91,20 +90,18 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var ioSignal = (UserIOSignal) event;
             sendMessage(ioSignal.getText(), event.getTelegramId());
-            sendKeyboard(event.getTelegramId());
         }
         if (event instanceof FailureEvent)
         {
             var ioSignal = (FailureEvent) event;
             sendMessage(ioSignal.getReason(), event.getTelegramId());
-            sendKeyboard(event.getTelegramId());
         }
     }
 
     private void sendMessage(String text, Long chatId)
     {
         var message = new SendMessage().setChatId(chatId)
-                                       .setText(String.format("Got it %s", text))
+                                       .setText(text)
                                        .setReplyMarkup(getMainMenuKeyboard());
         try
         {
@@ -122,7 +119,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         if (!update.hasMessage() || !update.getMessage().hasText())
         {
             sendMessage(":)", chatId);
-            sendKeyboard(chatId);
             return;
         }
         var messageText = update.getMessage().getText();
@@ -133,7 +129,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             switch (messageText)
             {
                 case ("/start"):
-                    sendKeyboard(chatId);
                     return;
                 case ("send"):
                 case ("set"):
@@ -141,7 +136,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
                     sendMessage("Аргументы пажаласта", chatId);
                     return;
                 default:
-                    signal = new GUIStartedSignal();
+                    signal = new UserIOSignal(messageText);
                     signal.setTelegramId(chatId);
                     notify(signal);
                     break;
@@ -164,19 +159,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         }
     }
 
-    private void sendKeyboard(Long chatId)
-    {
-        var kb = getMainMenuKeyboard();
-        var message = new SendMessage().setChatId(chatId)
-                                       .setReplyMarkup(kb);
-        try
-        {
-            execute(message);
-        } catch (TelegramApiException e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onUpdatesReceived(List<Update> updates)
