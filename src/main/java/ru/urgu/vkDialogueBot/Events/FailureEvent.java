@@ -25,4 +25,10 @@ public class FailureEvent extends Event
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

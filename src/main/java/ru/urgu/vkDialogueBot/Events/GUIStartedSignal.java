@@ -7,4 +7,10 @@ public class GUIStartedSignal implements Signal
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

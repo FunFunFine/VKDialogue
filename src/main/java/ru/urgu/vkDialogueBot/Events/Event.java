@@ -23,4 +23,10 @@ public abstract class Event implements Signal
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }
