@@ -9,7 +9,7 @@ public class GUIExitSignal implements Signal
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
 
     }

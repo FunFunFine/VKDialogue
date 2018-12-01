@@ -25,7 +25,8 @@ import java.util.List;
 public class TelegramView extends TelegramLongPollingBot implements IView
 {
     private final List<IObserver> _observers = new LinkedList<>();
-    private HashMap<Long, String> _lastMessages = new HashMap<>();
+    private final HashMap<Long, String> _lastMessages = new HashMap<>();
+
     public TelegramView()
     {
     }
@@ -33,7 +34,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void run()
     {
-        ApiContextInitializer.init();
         var botsApi = new TelegramBotsApi();
         try
         {
@@ -92,11 +92,13 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var ioSignal = (UserIOSignal) event;
             sendMessage(ioSignal.getText(), event.getTelegramId());
+            sendKeyboard(event.getTelegramId());
         }
         if (event instanceof FailureEvent)
         {
             var ioSignal = (FailureEvent) event;
             sendMessage(ioSignal.getReason(), event.getTelegramId());
+            sendKeyboard(event.getTelegramId());
         }
     }
 
@@ -121,16 +123,55 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var messageText = update.getMessage().getText();
             var chatId = update.getMessage().getChatId();
-            switch (_lastMessages.get(chatId))
+            Signal signal;
+
+            synchronized (_lastMessages)
             {
-                case ("/start"):
-                    var s = new GUIStartedSignal();
-
-                    notify();
-                    break;
+                switch (messageText)
+                {
+                    case ("/start"):
+                        sendKeyboard(chatId);
+                        return;
+                    case ("send"):
+                    case ("set"):
+                        _lastMessages.put(chatId, messageText);
+                        sendMessage("Аргументы пажаласта", chatId);
+                        return;
+                    default:
+                        signal = new GUIStartedSignal();
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
+                }
+                var lastMessage = _lastMessages.get(chatId);
+                switch (lastMessage)
+                {
+                    case ("send"):
+                        signal = new UserIOSignal("send " + messageText);
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
+                    case ("set"):
+                        signal = new UserIOSignal("set " + messageText);
+                        signal.setTelegramId(chatId);
+                        notify(signal);
+                        break;
+                }
             }
-            _lastMessages.put(chatId, messageText);
+        }
+    }
 
+    private void sendKeyboard(Long chatId)
+    {
+        var kb = getMainMenuKeyboard();
+        var message = new SendMessage().setChatId(chatId)
+                                       .setReplyMarkup(kb);
+        try
+        {
+            execute(message);
+        } catch (TelegramApiException e)
+        {
+            e.printStackTrace();
         }
     }
 

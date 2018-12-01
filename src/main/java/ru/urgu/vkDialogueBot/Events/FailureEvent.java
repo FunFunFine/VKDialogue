@@ -27,7 +27,7 @@ public class FailureEvent extends Event
     }
 
     @Override
-    public void setTelegramId()
+    public void setTelegramId(Long chatId)
     {
 
     }
