@@ -51,11 +51,11 @@ public class TelegramView extends TelegramLongPollingBot implements IView
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
-        keyboardFirstRow.add("send");
-        keyboardFirstRow.add("set");
+        keyboardFirstRow.add("отправить");
+        keyboardFirstRow.add("выбрать получателя");
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardSecondRow.add("help");
-        keyboardSecondRow.add("read");
+        keyboardSecondRow.add("помощь");
+        keyboardSecondRow.add("прочитать");
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -130,8 +130,8 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             {
                 case ("/start"):
                     return;
-                case ("send"):
-                case ("set"):
+                case ("отправить"):
+                case ("выбрать_получателя"):
                     _lastMessages.put(chatId, messageText);
                     sendMessage("Аргументы пажаласта", chatId);
                     return;
@@ -144,13 +144,13 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             var lastMessage = _lastMessages.get(chatId);
             switch (lastMessage)
             {
-                case ("send"):
-                    signal = new UserIOSignal("send " + messageText);
+                case ("отправить"):
+                    signal = new UserIOSignal("отправить " + messageText);
                     signal.setTelegramId(chatId);
                     notify(signal);
                     break;
-                case ("set"):
-                    signal = new UserIOSignal("set " + messageText);
+                case ("выбрать_получателя"):
+                    signal = new UserIOSignal("выбрать_получателя " + messageText);
                     signal.setTelegramId(chatId);
                     notify(signal);
                     break;

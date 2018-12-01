@@ -12,9 +12,9 @@ public class CommandParser
 
     public CommandParser()
     {
-        addCommand(new Command("help", this::ShowHelpCommand));
-        addCommand(new Command("set", this::SetUserCommand));
-        addCommand(new Command("exit", this::ExitCommand));
+        addCommand(new Command("помощь", this::ShowHelpCommand));
+        addCommand(new Command("выбрать_получателя", this::SetUserCommand));
+        addCommand(new Command("выход", this::ExitCommand));
     }
 
     private Signal ExitCommand(String[] args)
@@ -44,11 +44,11 @@ public class CommandParser
         }
         else
         {
-            message = "send *message* - отправить сообщение пользователю в текущий диалог\n" +
-                    "set *id* - переключиться на диалог с пользователем *id*\n" +
-                    "read - прочитать все новые + 10 старых сообщений из текущего диалога\n" +
+            message = "отправить *сообщение* - отправить сообщение пользователю в текущий диалог\n" +
+                    "выбрать_получателя *id* - переключиться на диалог с пользователем *id*\n" +
+                    "прочитать - прочитать все новые + 10 старых сообщений из текущего диалога\n" +
                     "funfunfine.github.io - здесь можно разрешить нам писать сообщения вам ВК\n" +
-                    "exit - выход\n";
+                    "выход - выход\n";
         }
         return new GetHelpEvent(null, message);
     }
