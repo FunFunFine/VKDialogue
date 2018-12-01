@@ -12,18 +12,20 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
+import ru.urgu.vkDialogueBot.Events.GUIStartedSignal;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 public class TelegramView extends TelegramLongPollingBot implements IView
 {
     private final List<IObserver> _observers = new LinkedList<>();
-
+    private HashMap<Long, String> _lastMessages = new HashMap<>();
     public TelegramView()
     {
     }
@@ -118,16 +120,16 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var messageText = update.getMessage().getText();
             var chatId = update.getMessage().getChatId();
-            var message = new SendMessage().setChatId(chatId)
-                                           .setText(String.format("Got it %s", messageText))
-                                           .setReplyMarkup(getMainMenuKeyboard());
-            try
+            switch (_lastMessages.get(chatId))
             {
-                execute(message);
-            } catch (TelegramApiException e)
-            {
-                e.printStackTrace();
+                case ("/start"):
+                    var s = new GUIStartedSignal();
+
+                    notify();
+                    break;
             }
+            _lastMessages.put(chatId, messageText);
+
         }
     }
 

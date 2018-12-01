@@ -17,4 +17,10 @@ public class UserIOSignal implements Signal
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

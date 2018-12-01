@@ -43,4 +43,10 @@ public class CheckMessagesEvent extends MessageEvent
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

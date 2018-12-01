@@ -19,4 +19,10 @@ public class SetUserEvent extends Event
     {
         return null;
     }
+
+    @Override
+    public void setTelegramId()
+    {
+
+    }
 }

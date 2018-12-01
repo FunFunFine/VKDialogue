@@ -41,6 +41,12 @@ public abstract class MessageEvent extends Event
         return this._id;
     }
 
+    @Override
+    public void setTelegramId()
+    {
+
+    }
+
     public enum ReceiverType
     {
         Id,
