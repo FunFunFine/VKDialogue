@@ -1,29 +1,31 @@
 package ru.urgu.vkDialogueBot.Controller;
 
 import ru.urgu.vkDialogueBot.Events.*;
-import ru.urgu.vkDialogueBot.Utils.Func;
+import ru.urgu.vkDialogueBot.Utils.FuncDouble;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandParser
 {
-    private Map<String, Func<String[], Signal>> _commands = new HashMap<>();
+    private Map<String, FuncDouble<String[], Long, Signal>> _commands = new HashMap<>();
 
-    public CommandParser()
+    CommandParser()
     {
         addCommand(new Command("help", this::ShowHelpCommand));
         addCommand(new Command("set", this::SetUserCommand));
         addCommand(new Command("exit", this::ExitCommand));
     }
 
-    private Signal ExitCommand(String[] args)
+    private Signal ExitCommand(String[] args, Long id)
     {
 
-        return new GUIExitSignal();
+        final GUIExitSignal guiExitSignal = new GUIExitSignal();
+        guiExitSignal.setTelegramId(id);
+        return guiExitSignal;
     }
 
-    private Signal SetUserCommand(String[] args)
+    private Signal SetUserCommand(String[] args, Long chatId)
     {
         var id = 0;
         try
@@ -31,26 +33,24 @@ public class CommandParser
             id = Integer.parseInt(args[0]);
         } catch (Exception e)
         {
-            return new FailureEvent(null, "Неверный id");
+            final FailureEvent event = new FailureEvent(null, "Неверный id");
+            event.setTelegramId(chatId);
+            return event;
         }
         return new SetUserEvent(null, id);
     }
-    private Signal ShowHelpCommand(String[] args)
+
+    private Signal ShowHelpCommand(String[] args, Long chatId)
     {
         var message = "";
-        if (args.length != 0)
-        {
-            message = "Неизвестная команда";
-        }
-        else
-        {
-            message = "send *message* - отправить сообщение пользователю в текущий диалог\n" +
-                    "set *id* - переключиться на диалог с пользователем *id*\n" +
-                    "read - прочитать все новые + 10 старых сообщений из текущего диалога\n" +
-                    "funfunfine.github.io - здесь можно разрешить нам писать сообщения вам ВК\n" +
-                    "exit - выход\n";
-        }
-        return new GetHelpEvent(null, message);
+        message = "send *message* - отправить сообщение пользователю в текущий диалог\n" +
+                "set *id* - переключиться на диалог с пользователем *id*\n" +
+                "read - прочитать все новые + 10 старых сообщений из текущего диалога\n" +
+                "funfunfine.github.io - здесь можно разрешить нам писать сообщения вам ВК\n" +
+                "exit - выход\n";
+        final GetHelpEvent getHelpEvent = new GetHelpEvent(null, message);
+        getHelpEvent.setTelegramId(chatId);
+        return getHelpEvent;
     }
 
 
@@ -60,20 +60,26 @@ public class CommandParser
     }
 
 
-    Signal parse(String command)
+    Signal parse(UserIOSignal signal)
     {
+        var command = signal.getText();
         var fields = command.toLowerCase().trim().split(" ");
         if (fields.length == 0)
         {
-            return new FailureEvent(null, "Вы ничего не напечатали");
+            final FailureEvent failureEvent = new FailureEvent(null, "Вы ничего не напечатали");
+            failureEvent.setTelegramId(signal.getTelegramId());
+            return failureEvent;
         }
         var commandName = fields[0];
         if (!_commands.containsKey(commandName))
         {
-            return new FailureEvent(null, "Неизвестная команда");
+            final FailureEvent failureEvent = new FailureEvent(null, "Неизвестная команда");
+            failureEvent.setTelegramId(signal.getTelegramId());
+            return failureEvent;
         }
         var arguments = new String[fields.length - 1];
         System.arraycopy(fields, 1, arguments, 0, fields.length - 1);
-        return _commands.get(commandName).apply(arguments);
+
+        return _commands.get(commandName).apply(arguments, signal.getTelegramId());
     }
 }

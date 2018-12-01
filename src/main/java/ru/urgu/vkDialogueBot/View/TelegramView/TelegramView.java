@@ -144,6 +144,8 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             var lastMessage = _lastMessages.get(chatId);
             switch (lastMessage)
             {
+
+
                 case ("send"):
                     signal = new UserIOSignal("send " + messageText);
                     signal.setTelegramId(chatId);

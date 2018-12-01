@@ -22,8 +22,8 @@ public class BotController implements IObserver, IObservable
         {
             put(GUIStartedSignal.class, signal -> greetUser());
             put(UserIOSignal.class, signal -> {
-                var text = ((UserIOSignal) signal).getText();
-                var parsedSignal = _parser.parse(text);
+                var ioSignal = ((UserIOSignal) signal);
+                var parsedSignal = _parser.parse(ioSignal);
                 return _eventActionMapping.get(parsedSignal.getClass()).apply(parsedSignal);
             });
             put(GetHelpEvent.class, event -> processHelp((GetHelpEvent) event));
@@ -42,8 +42,8 @@ public class BotController implements IObserver, IObservable
         Set<Command> _commands = new HashSet<>()
         {
             {
-                add(new Command("send", fields -> SendMessageCommand(fields)));
-                add(new Command("read", fields -> ReadMessagesCommand(fields)));
+                add(new Command("send", (fields, i) -> SendMessageCommand(fields, i)));
+                add(new Command("read", (fields, i) -> ReadMessagesCommand(fields, i)));
             }
         };
         for (var command : _commands)
@@ -59,7 +59,7 @@ public class BotController implements IObserver, IObservable
     }
 
 
-    private Signal ReadMessagesCommand(String[] args)
+    private Signal ReadMessagesCommand(String[] args, Long id)
     {
         var user = _users.get(_currentTelegramId);
         if (args.length != 0)
@@ -79,7 +79,7 @@ public class BotController implements IObserver, IObservable
         return event;
     }
 
-    private Signal SendMessageCommand(String[] fields)
+    private Signal SendMessageCommand(String[] fields, Long id)
     {
         var user = _users.get(_currentTelegramId);
         if (fields.length == 0)
