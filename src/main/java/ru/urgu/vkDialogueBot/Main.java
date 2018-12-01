@@ -16,6 +16,7 @@ public class Main
     public static void main(String[] args)
     {
         ApiContextInitializer.init();
+
         var gui = new TelegramView();
         var vkApi = new VkApi(getTokenFromCfg());
         var controller = new BotController(new VkCommunityModel(vkApi), gui);

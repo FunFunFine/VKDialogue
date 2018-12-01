@@ -11,4 +11,10 @@ public class UserIOSignal implements Signal
     {
         _text = text;
     }
+
+    @Override
+    public Long getTelegramId()
+    {
+        return null;
+    }
 }

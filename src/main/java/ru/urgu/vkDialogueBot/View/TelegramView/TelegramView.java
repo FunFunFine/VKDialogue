@@ -11,17 +11,21 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
+import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.Signal;
+import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TelegramView extends TelegramLongPollingBot implements IView
 {
+    private final List<IObserver> _observers = new LinkedList<>();
+
     public TelegramView()
     {
-        ApiContextInitializer.init();
     }
 
     @Override
@@ -37,30 +41,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         }
     }
 
-    @Override
-    public void notify(Signal event)
-    {
-
-    }
-
-    @Override
-    public void addObserver(IObserver observer)
-    {
-
-    }
-
-    @Override
-    public void removeObserver(IObserver observer)
-    {
-
-    }
-
-    @Override
-    public void receive(Signal event)
-    {
-
-    }
-
     private static ReplyKeyboardMarkup getMainMenuKeyboard()
     {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -70,16 +50,65 @@ public class TelegramView extends TelegramLongPollingBot implements IView
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
-        keyboardFirstRow.add("1st");
-        keyboardFirstRow.add("2nd");
+        keyboardFirstRow.add("send");
+        keyboardFirstRow.add("set");
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardSecondRow.add("3d");
-        keyboardSecondRow.add("4nd");
+        keyboardSecondRow.add("help");
+        keyboardSecondRow.add("read");
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
-
         return replyKeyboardMarkup;
+    }
+
+    @Override
+    public void notify(Signal event)
+    {
+        for (var observer : _observers)
+        {
+            observer.receive(event);
+        }
+    }
+
+    @Override
+    public void addObserver(IObserver observer)
+    {
+        _observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(IObserver observer)
+    {
+        _observers.remove(observer);
+    }
+
+    @Override
+    public void receive(Signal event)
+    {
+        if (event instanceof UserIOSignal)
+        {
+            var ioSignal = (UserIOSignal) event;
+            sendMessage(ioSignal.getText(), event.getTelegramId());
+        }
+        if (event instanceof FailureEvent)
+        {
+            var ioSignal = (FailureEvent) event;
+            sendMessage(ioSignal.getReason(), event.getTelegramId());
+        }
+    }
+
+    private void sendMessage(String text, Long chatId)
+    {
+        var message = new SendMessage().setChatId(chatId)
+                                       .setText(String.format("Got it %s", text))
+                                       .setReplyMarkup(getMainMenuKeyboard());
+        try
+        {
+            execute(message);
+        } catch (TelegramApiException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
