@@ -34,7 +34,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void run()
     {
-        ApiContextInitializer.init();
         var botsApi = new TelegramBotsApi();
         try
         {
