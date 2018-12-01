@@ -41,11 +41,6 @@ public abstract class MessageEvent extends Event
         return this._id;
     }
 
-    @Override
-    public void setTelegramId(Long chatId)
-    {
-
-    }
 
     public enum ReceiverType
     {

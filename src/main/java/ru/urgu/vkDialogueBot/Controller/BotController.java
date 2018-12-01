@@ -14,7 +14,7 @@ public class BotController implements IObserver, IObservable
     private final IView _gui;
     private final VkCommunityModel _model;
     private final Map<Long, SimpleUserToken> _users = new HashMap<>();
-    private long _currentTelegramId = -1;
+    private Long _currentTelegramId = -1L;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
     private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
@@ -22,8 +22,8 @@ public class BotController implements IObserver, IObservable
         {
             put(GUIStartedSignal.class, signal -> greetUser());
             put(UserIOSignal.class, signal -> {
-                var text = ((UserIOSignal) signal).getText();
-                var parsedSignal = _parser.parse(text);
+                var ioSignal = ((UserIOSignal) signal);
+                var parsedSignal = _parser.parse(ioSignal);
                 return _eventActionMapping.get(parsedSignal.getClass()).apply(parsedSignal);
             });
             put(GetHelpEvent.class, event -> processHelp((GetHelpEvent) event));
@@ -42,8 +42,8 @@ public class BotController implements IObserver, IObservable
         Set<Command> _commands = new HashSet<>()
         {
             {
-                add(new Command("send", fields -> SendMessageCommand(fields)));
-                add(new Command("read", fields -> ReadMessagesCommand(fields)));
+                add(new Command("отправить", (fields, i) -> SendMessageCommand(fields, i)));
+                add(new Command("прочитать", (fields, i) -> ReadMessagesCommand(fields, i)));
             }
         };
         for (var command : _commands)
@@ -59,32 +59,41 @@ public class BotController implements IObserver, IObservable
     }
 
 
-    private Signal ReadMessagesCommand(String[] args)
+    private Signal ReadMessagesCommand(String[] args, Long id)
     {
         var user = _users.get(_currentTelegramId);
         if (args.length != 0)
         {
-            return new FailureEvent(null, "Неизвестная команда");
+            final FailureEvent event = new FailureEvent(null, "Неизвестная команда");
+            event.setTelegramId(_currentTelegramId);
+            return event;
         }
         if (user.getCurrentResponderId() == -1)
         {
-            return new FailureEvent(null, "Нужно сделать set *id*");
+            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
+            failureEvent.setTelegramId(_currentTelegramId);
+            return failureEvent;
         }
         var event = new CheckMessagesEvent(user.getCurrentResponderId(), user);
         event.setOldMessagesAmount(10);
+        event.setTelegramId(_currentTelegramId);
         return event;
     }
 
-    private Signal SendMessageCommand(String[] fields)
+    private Signal SendMessageCommand(String[] fields, Long id)
     {
         var user = _users.get(_currentTelegramId);
         if (fields.length == 0)
         {
-            return new FailureEvent(null, "Зачем посылать пустое сообщение?");
+            final FailureEvent failureEvent = new FailureEvent(null, "Зачем посылать пустое сообщение?");
+            failureEvent.setTelegramId(_currentTelegramId);
+            return failureEvent;
         }
         if (user.getCurrentResponderId() == -1)
         {
-            return new FailureEvent(null, "Нужно сделать set *id*");
+            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
+            failureEvent.setTelegramId(_currentTelegramId);
+            return failureEvent;
         }
         var headline = "Сообщение пользователя " + user.getHash() + ":\n";
         var messageBuilder = new StringBuilder();
@@ -92,18 +101,27 @@ public class BotController implements IObserver, IObservable
         {
             messageBuilder.append(field).append(" ");
         }
-        return new SendMessageEvent(user.getCurrentResponderId(), headline + messageBuilder.toString(), user);
+        final SendMessageEvent sendMessageEvent = new SendMessageEvent(user.getCurrentResponderId(), headline + messageBuilder.toString(), user);
+        sendMessageEvent.setTelegramId(_currentTelegramId);
+
+        return sendMessageEvent;
     }
 
     private Signal processHelp(GetHelpEvent event)
     {
-        return new UserIOSignal(event.getMessage());
+        final UserIOSignal userIOSignal = new UserIOSignal(event.getMessage());
+        userIOSignal.setTelegramId(_currentTelegramId);
+
+        return userIOSignal;
     }
 
     private Signal processSet(SetUserEvent event)
     {
         _users.get(_currentTelegramId).setCurrentResponderId(event.getId());
-        return new UserIOSignal("Готово!");
+        final UserIOSignal userIOSignal = new UserIOSignal("Готово!");
+        userIOSignal.setTelegramId(_currentTelegramId);
+
+        return userIOSignal;
     }
 
 
@@ -114,7 +132,9 @@ public class BotController implements IObserver, IObservable
 
     private Signal greetUser()
     {
-        return new UserIOSignal("Привет! Я  - Телеграмматор. Команда \"Help\" расскажет про меня подробнее :)");
+        final UserIOSignal userIOSignal = new UserIOSignal("Привет! Я  - Телеграмматор. Команда \"помощь\" расскажет про меня подробнее :)");
+        userIOSignal.setTelegramId(_currentTelegramId);
+        return userIOSignal;
     }
 
     private Signal processSend(SendMessageEvent signal)
@@ -127,7 +147,9 @@ public class BotController implements IObserver, IObservable
         }
         else
         {
-            responseSignal = new UserIOSignal("Отправлено");
+            final UserIOSignal signal1 = new UserIOSignal("Отправлено");
+            signal1.setTelegramId(_currentTelegramId);
+            responseSignal = signal1;
         }
         return (responseSignal);
     }
@@ -143,7 +165,9 @@ public class BotController implements IObserver, IObservable
         else
         {
             var messages = String.join("\n", ((CheckMessagesEvent) response).getMessages());
-            responseSignal = new UserIOSignal(messages);
+            final UserIOSignal responseSignal1 = new UserIOSignal(messages);
+            responseSignal1.setTelegramId(_currentTelegramId);
+            responseSignal = responseSignal1;
         }
         return (responseSignal);
     }
@@ -154,7 +178,9 @@ public class BotController implements IObserver, IObservable
     {
         _currentTelegramId = signal.getTelegramId();
         if (!_users.containsKey(_currentTelegramId))
-            _users.put(_currentTelegramId, new SimpleUserToken((int)_currentTelegramId));
+        {
+            _users.put(_currentTelegramId, new SimpleUserToken(_currentTelegramId));
+        }
         var result = _eventActionMapping.get(signal.getClass()).apply(signal);
         notify(result);
     }

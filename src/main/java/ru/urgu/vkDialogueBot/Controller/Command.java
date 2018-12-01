@@ -2,7 +2,7 @@ package ru.urgu.vkDialogueBot.Controller;
 
 import lombok.Getter;
 import ru.urgu.vkDialogueBot.Events.Signal;
-import ru.urgu.vkDialogueBot.Utils.Func;
+import ru.urgu.vkDialogueBot.Utils.FuncDouble;
 
 public class Command
 {
@@ -11,9 +11,9 @@ public class Command
 
 
     @Getter
-    private Func<String[], Signal> _handler;
+    private FuncDouble<String[], Long, Signal> _handler;
 
-    public Command(String name, Func<String[], Signal> handler)
+    Command(String name, FuncDouble<String[], Long, Signal> handler)
     {
         _name = name.toLowerCase().trim();
         _handler = handler;

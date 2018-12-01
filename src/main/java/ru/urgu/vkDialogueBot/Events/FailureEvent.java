@@ -20,15 +20,5 @@ public class FailureEvent extends Event
         return "Беда :( ::" + " " + _reason;
     }
 
-    @Override
-    public Long getTelegramId()
-    {
-        return null;
-    }
 
-    @Override
-    public void setTelegramId(Long chatId)
-    {
-
-    }
 }

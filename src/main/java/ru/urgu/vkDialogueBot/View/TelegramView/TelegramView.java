@@ -1,7 +1,6 @@
 package ru.urgu.vkDialogueBot.View.TelegramView;
 
 
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,7 +11,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.FailureEvent;
-import ru.urgu.vkDialogueBot.Events.GUIStartedSignal;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.View.IView;
@@ -53,11 +51,11 @@ public class TelegramView extends TelegramLongPollingBot implements IView
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
-        keyboardFirstRow.add("send");
-        keyboardFirstRow.add("set");
+        keyboardFirstRow.add("отправить");
+        keyboardFirstRow.add("выбрать_получателя");
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        keyboardSecondRow.add("help");
-        keyboardSecondRow.add("read");
+        keyboardSecondRow.add("помощь");
+        keyboardSecondRow.add("прочитать");
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -92,20 +90,18 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         {
             var ioSignal = (UserIOSignal) event;
             sendMessage(ioSignal.getText(), event.getTelegramId());
-            sendKeyboard(event.getTelegramId());
         }
         if (event instanceof FailureEvent)
         {
             var ioSignal = (FailureEvent) event;
             sendMessage(ioSignal.getReason(), event.getTelegramId());
-            sendKeyboard(event.getTelegramId());
         }
     }
 
     private void sendMessage(String text, Long chatId)
     {
         var message = new SendMessage().setChatId(chatId)
-                                       .setText(String.format("Got it %s", text))
+                                       .setText(text)
                                        .setReplyMarkup(getMainMenuKeyboard());
         try
         {
@@ -119,61 +115,60 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void onUpdateReceived(Update update)
     {
-        if (update.hasMessage() && update.getMessage().hasText())
+        var chatId = update.getMessage().getChatId();
+        if (!update.hasMessage() || !update.getMessage().hasText())
         {
-            var messageText = update.getMessage().getText();
-            var chatId = update.getMessage().getChatId();
-            Signal signal;
+            sendMessage(":)", chatId);
+            return;
+        }
+        var messageText = update.getMessage().getText();
+        Signal signal;
 
-            synchronized (_lastMessages)
+        synchronized (_lastMessages)
+        {
+            switch (messageText)
             {
-                switch (messageText)
-                {
-                    case ("/start"):
-                        sendKeyboard(chatId);
-                        return;
-                    case ("send"):
-                    case ("set"):
-                        _lastMessages.put(chatId, messageText);
-                        sendMessage("Аргументы пажаласта", chatId);
-                        return;
-                    default:
-                        signal = new GUIStartedSignal();
-                        signal.setTelegramId(chatId);
-                        notify(signal);
+                case ("/start"):
+                    return;
+                case ("отправить"):
+                case ("выбрать_получателя"):
+                    _lastMessages.put(chatId, messageText);
+                    sendMessage("Аргументы пажаласта", chatId);
+                    return;
+                default:
+                    var lastMessage = _lastMessages.get(chatId);
+                    if (lastMessage == null || lastMessage.equals("выбрать_получателя") || lastMessage.equals("отправить"))
+                    {
                         break;
-                }
-                var lastMessage = _lastMessages.get(chatId);
-                switch (lastMessage)
-                {
-                    case ("send"):
-                        signal = new UserIOSignal("send " + messageText);
-                        signal.setTelegramId(chatId);
-                        notify(signal);
-                        break;
-                    case ("set"):
-                        signal = new UserIOSignal("set " + messageText);
-                        signal.setTelegramId(chatId);
-                        notify(signal);
-                        break;
-                }
+                    }
+                    signal = new UserIOSignal(messageText);
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
             }
+            var lastMessage = _lastMessages.get(chatId);
+            if (lastMessage == null)
+            {
+                _lastMessages.put(chatId, messageText);
+                return;
+            }
+            switch (lastMessage)
+            {
+                case ("отправить"):
+                    signal = new UserIOSignal("отправить " + messageText);
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
+                case ("выбрать_получателя"):
+                    signal = new UserIOSignal("выбрать_получателя " + messageText);
+                    signal.setTelegramId(chatId);
+                    notify(signal);
+                    break;
+            }
+            _lastMessages.put(chatId, messageText);
         }
     }
 
-    private void sendKeyboard(Long chatId)
-    {
-        var kb = getMainMenuKeyboard();
-        var message = new SendMessage().setChatId(chatId)
-                                       .setReplyMarkup(kb);
-        try
-        {
-            execute(message);
-        } catch (TelegramApiException e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onUpdatesReceived(List<Update> updates)
