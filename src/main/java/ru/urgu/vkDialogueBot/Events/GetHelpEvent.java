@@ -19,4 +19,10 @@ public class GetHelpEvent extends Event
     {
         return null;
     }
+
+    @Override
+    public Long getId()
+    {
+        return null;
+    }
 }

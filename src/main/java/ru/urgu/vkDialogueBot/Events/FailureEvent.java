@@ -19,4 +19,10 @@ public class FailureEvent extends Event
     {
         return "Беда :( ::" + " " + _reason;
     }
+
+    @Override
+    public Long getId()
+    {
+        return null;
+    }
 }

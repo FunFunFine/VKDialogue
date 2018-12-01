@@ -98,9 +98,18 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         }
     }
 
-    private void sendMessage(String text)
+    private void sendMessage(String text, Long chatId)
     {
-
+        var message = new SendMessage().setChatId(chatId)
+                                       .setText(String.format("Got it %s", text))
+                                       .setReplyMarkup(getMainMenuKeyboard());
+        try
+        {
+            execute(message);
+        } catch (TelegramApiException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

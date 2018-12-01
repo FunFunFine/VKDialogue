@@ -14,4 +14,10 @@ public class UserCreationEvent extends Event
     {
         return "Создаем пользователя";
     }
+
+    @Override
+    public Long getId()
+    {
+        return null;
+    }
 }
