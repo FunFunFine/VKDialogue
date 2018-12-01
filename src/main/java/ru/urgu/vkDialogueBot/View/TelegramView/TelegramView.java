@@ -160,6 +160,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
                     notify(signal);
                     break;
             }
+            _lastMessages.put(chatId, messageText);
         }
     }
 

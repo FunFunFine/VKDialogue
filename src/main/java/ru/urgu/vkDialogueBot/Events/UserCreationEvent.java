@@ -6,7 +6,7 @@ public class UserCreationEvent extends Event
 {
     public UserCreationEvent(String login, String pass)
     {
-        super(new SimpleUserToken(login.hashCode() ^ pass.hashCode()));
+        super(new SimpleUserToken((long) login.hashCode() ^ pass.hashCode()));
     }
 
     @Override
