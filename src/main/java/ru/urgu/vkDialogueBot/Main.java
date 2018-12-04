@@ -2,6 +2,7 @@ package ru.urgu.vkDialogueBot;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import ru.urgu.vkDialogueBot.Controller.BotController;
+import ru.urgu.vkDialogueBot.Controller.UsersDataBase;
 import ru.urgu.vkDialogueBot.Model.VkApi;
 import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
 import ru.urgu.vkDialogueBot.View.TelegramView.TelegramView;
@@ -16,11 +17,18 @@ public class Main
     public static void main(String[] args)
     {
         ApiContextInitializer.init();
-
+        var dataBase = new UsersDataBase();
+        dataBase.LoadDatabase();
         var gui = new TelegramView();
         var vkApi = new VkApi(getTokenFromCfg());
-        var controller = new BotController(new VkCommunityModel(vkApi), gui);
-        controller.runBot();
+        var controller = new BotController(new VkCommunityModel(vkApi), gui, dataBase);
+        try {
+            controller.runBot();
+        }finally
+        {
+            dataBase.SaveDataBase();
+        }
+
     }
 
     private static String getTokenFromCfg()

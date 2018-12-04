@@ -13,7 +13,7 @@ public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
     private final VkCommunityModel _model;
-    private final Map<Long, SimpleUserToken> _users = new HashMap<>();
+    private final UsersDataBase _users;
     private Long _currentTelegramId = -1L;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
@@ -36,8 +36,9 @@ public class BotController implements IObserver, IObservable
     };
 
 
-    public BotController(VkCommunityModel vkModel, IView gui)
+    public BotController(VkCommunityModel vkModel, IView gui, UsersDataBase users)
     {
+        _users = users;
         _parser = new CommandParser();
         Set<Command> _commands = new HashSet<>()
         {
@@ -61,7 +62,7 @@ public class BotController implements IObserver, IObservable
 
     private Signal ReadMessagesCommand(String[] args, Long id)
     {
-        var user = _users.get(_currentTelegramId);
+        var user = _users.GetUser(_currentTelegramId);
         if (args.length != 0)
         {
             final FailureEvent event = new FailureEvent(null, "Неизвестная команда");
@@ -82,7 +83,7 @@ public class BotController implements IObserver, IObservable
 
     private Signal SendMessageCommand(String[] fields, Long id)
     {
-        var user = _users.get(_currentTelegramId);
+        var user = _users.GetUser(_currentTelegramId);
         if (fields.length == 0)
         {
             final FailureEvent failureEvent = new FailureEvent(null, "Зачем посылать пустое сообщение?");
@@ -117,7 +118,7 @@ public class BotController implements IObserver, IObservable
 
     private Signal processSet(SetUserEvent event)
     {
-        _users.get(_currentTelegramId).setCurrentResponderId(event.getId());
+        _users.GetUser(_currentTelegramId).setCurrentResponderId(event.getId());
         final UserIOSignal userIOSignal = new UserIOSignal("Готово!");
         userIOSignal.setTelegramId(_currentTelegramId);
 
@@ -177,10 +178,7 @@ public class BotController implements IObserver, IObservable
     public void receive(Signal signal)
     {
         _currentTelegramId = signal.getTelegramId();
-        if (!_users.containsKey(_currentTelegramId))
-        {
-            _users.put(_currentTelegramId, new SimpleUserToken(_currentTelegramId));
-        }
+        _users.AddUser(_currentTelegramId);
         var result = _eventActionMapping.get(signal.getClass()).apply(signal);
         notify(result);
     }
