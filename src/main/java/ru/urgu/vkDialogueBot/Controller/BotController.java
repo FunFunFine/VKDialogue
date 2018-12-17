@@ -39,7 +39,6 @@ public class BotController implements IObserver, IObservable
     public BotController(VkCommunityModel vkModel, IView gui, UsersDataBase users)
     {
         _users = users;
-        _parser = new CommandParser();
         Set<Command> _commands = new HashSet<>()
         {
             {
@@ -47,10 +46,7 @@ public class BotController implements IObserver, IObservable
                 add(new Command("прочитать", (fields, i) -> ReadMessagesCommand(fields, i)));
             }
         };
-        for (var command : _commands)
-        {
-            _parser.addCommand(command);
-        }
+        _parser = new CommandParser((Command[]) _commands.toArray());
         _model = vkModel;
         _gui = gui;
         gui.addObserver(this);

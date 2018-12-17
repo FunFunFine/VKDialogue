@@ -4,11 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.urgu.vkDialogueBot.Controller.Command;
 import ru.urgu.vkDialogueBot.Controller.CommandParser;
-import ru.urgu.vkDialogueBot.Events.Event;
+import ru.urgu.vkDialogueBot.Events.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Type;
+import java.util.*;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class CommandParserShould
@@ -17,14 +18,11 @@ public class CommandParserShould
     private Set<Command> _commands = new HashSet<>()
     {
         {
-//            add(new Command("help", this::ensure));
-//            add(new Command("set", this::ensure));
-//            add(new Command("send", this::ensure));
-//            add(new Command("read", this::ensure));
-//            add(new Command("exit", this::ensure));
+            add(new Command("отправить", this::ensure));
+            add(new Command("прочитать", this::ensure));
         }
 
-        private Event ensure(String[] fields)
+        private Signal ensure(String[] fields, Long num)
         {
             assertTrue(true);
             return null;
@@ -36,29 +34,42 @@ public class CommandParserShould
     @Before
     public void setUp()
     {
-        //parser = new CommandParser(_commands.toArray(new Command[0]));
+        parser = new CommandParser(_commands.toArray(new Command[0]));
     }
 
 
     @Test
     public void Pass_WhenHelp()
     {
-//        parser.parse("Help");
-//        parser.parse("help");
+        var sigBig = new UserIOSignal("Помощь");
+        var sigSmall = new UserIOSignal("помощь");
+
+        CheckResult(GetHelpEvent.class, sigBig, sigSmall);
     }
 
     @Test
     public void Pass_WhenSet()
     {
-//        parser.parse("set 12434");
-//        parser.parse("Set 1243345");
+        var sigBig = new UserIOSignal("выбрать_получателя 12434");
+        var sigSmall = new UserIOSignal("Выбрать_получателя 1243345");
+
+        CheckResult(SetUserEvent.class, sigBig, sigSmall);
+    }
+
+    private void CheckResult(Class resultSignal, UserIOSignal... signals)
+    {
+        for (var signal : signals)
+        {
+            var result = parser.parse(signal);
+            assertSame(resultSignal, result.getClass());
+        }
     }
 
     @Test
     public void Pass_WhenRead()
     {
-//        parser.parse("read");
-//        parser.parse("READ");
+       // parser.parse("read");
+       // parser.parse("READ");
     }
 
     @Test

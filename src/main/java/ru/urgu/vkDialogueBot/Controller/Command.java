@@ -13,7 +13,7 @@ public class Command
     @Getter
     private FuncDouble<String[], Long, Signal> _handler;
 
-    Command(String name, FuncDouble<String[], Long, Signal> handler)
+    public Command(String name, FuncDouble<String[], Long, Signal> handler)
     {
         _name = name.toLowerCase().trim();
         _handler = handler;

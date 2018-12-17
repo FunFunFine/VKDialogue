@@ -1,5 +1,6 @@
 package ru.urgu.vkDialogueBot.Controller;
 
+import com.vk.api.sdk.objects.ads.Ad;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Utils.FuncDouble;
 
@@ -11,6 +12,18 @@ public class CommandParser
     private Map<String, FuncDouble<String[], Long, Signal>> _commands = new HashMap<>();
 
     public CommandParser()
+    {
+        AddDefaultCommands();
+    }
+
+    public CommandParser(Command[] commands)
+    {
+        AddDefaultCommands();
+        for(var command : commands)
+            addCommand(command);
+    }
+
+    private void AddDefaultCommands()
     {
         addCommand(new Command("помощь", this::ShowHelpCommand));
         addCommand(new Command("выбрать_получателя", this::SetUserCommand));
@@ -56,13 +69,13 @@ public class CommandParser
     }
 
 
-    void addCommand(Command command)
+    public void addCommand(Command command)
     {
         _commands.put(command.getName(), command.getHandler());
     }
 
 
-    Signal parse(UserIOSignal signal)
+    public Signal parse(UserIOSignal signal)
     {
         var command = signal.getText();
         var fields = command.toLowerCase().trim().split(" ");
