@@ -4,6 +4,8 @@ import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 
 public class UserCreationEvent extends Event
 {
+    private Long chatId;
+
     public UserCreationEvent(String login, String pass)
     {
         super(new SimpleUserToken((long) login.hashCode() ^ pass.hashCode()));
@@ -14,8 +16,6 @@ public class UserCreationEvent extends Event
     {
         return "Создаем пользователя";
     }
-
-    private Long chatId;
 
     @Override
     public Long getTelegramId()

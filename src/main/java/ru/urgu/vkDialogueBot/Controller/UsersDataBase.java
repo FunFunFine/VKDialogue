@@ -6,7 +6,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UsersDataBase {
+public class UsersDataBase
+{
     private Map<Long, SimpleUserToken> _users = new HashMap<>();
 
     @Getter
@@ -17,10 +18,12 @@ public class UsersDataBase {
         _loaded = false;
     }
 
-    public void AddUser(Long id)
+    void AddUser(Long id)
     {
         if (!_users.containsKey(id))
+        {
             _users.put(id, new SimpleUserToken(id));
+        }
     }
 
     public Boolean Contains(Long id)
@@ -28,7 +31,7 @@ public class UsersDataBase {
         return _users.containsKey(id);
     }
 
-    public SimpleUserToken GetUser(Long id)
+    SimpleUserToken GetUser(Long id)
     {
         return _users.get(id);
     }
@@ -39,18 +42,16 @@ public class UsersDataBase {
         {
             FileInputStream fis = new FileInputStream("users.ser");
             ObjectInputStream ois = new ObjectInputStream(fis);
-            _users = (HashMap) ois.readObject();
+            _users = (HashMap<Long, SimpleUserToken>) ois.readObject();
             ois.close();
             fis.close();
-        }catch(IOException ioe)
+        } catch (IOException ioe)
         {
             ioe.printStackTrace();
-            return;
-        }catch(ClassNotFoundException c)
+        } catch (ClassNotFoundException c)
         {
             System.out.println("Class not found");
             c.printStackTrace();
-            return;
         }
     }
 
@@ -64,7 +65,7 @@ public class UsersDataBase {
             oos.writeObject(_users);
             oos.close();
             fos.close();
-        }catch(IOException ioe)
+        } catch (IOException ioe)
         {
             ioe.printStackTrace();
         }

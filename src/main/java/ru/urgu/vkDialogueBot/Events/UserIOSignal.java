@@ -6,13 +6,12 @@ public class UserIOSignal implements Signal
 {
     @Getter
     private String _text;
+    private Long chatId;
 
     public UserIOSignal(String text)
     {
         _text = text;
     }
-
-    private Long chatId;
 
     @Override
     public Long getTelegramId()

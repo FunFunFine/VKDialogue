@@ -22,9 +22,10 @@ public class Main
         var gui = new TelegramView();
         var vkApi = new VkApi(getTokenFromCfg());
         var controller = new BotController(new VkCommunityModel(vkApi), gui, dataBase);
-        try {
+        try
+        {
             controller.runBot();
-        }finally
+        } finally
         {
             dataBase.SaveDataBase();
         }

@@ -7,15 +7,14 @@ public class SetUserEvent extends Event
 {
     @Getter
     private int _id;
+    private Long chatId;
+
 
     public SetUserEvent(IUserToken token, int id)
     {
         super(token);
         _id = id;
     }
-
-
-    private Long chatId;
 
     @Override
     public String describe()

@@ -1,9 +1,7 @@
 package ru.urgu.vkDialogueBot.Controller;
 
-import com.vk.api.sdk.objects.ads.Ad;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Utils.Func;
-import ru.urgu.vkDialogueBot.Utils.FuncDouble;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +11,7 @@ public class CommandParser
     private Map<String, Func<Map<CommandArguments, Object>, Signal>> _commands = new HashMap<>();
     private Map<CommandArguments, Object> _kwargs = new HashMap<>();
 
-    public CommandParser()
+    CommandParser()
     {
         addCommand(new Command("помощь", this::ShowHelpCommand));
         addCommand(new Command("выбрать_получателя", this::SetUserCommand));
@@ -25,13 +23,15 @@ public class CommandParser
     public CommandParser(Command[] commands)
     {
         this();
-        for(var command : commands)
+        for (var command : commands)
+        {
             addCommand(command);
+        }
     }
 
     private Signal ExitCommand(Map<CommandArguments, Object> kwargs)
     {
-        var currentTelegramId = (Long)kwargs.get(CommandArguments.TelegramId);
+        var currentTelegramId = (Long) kwargs.get(CommandArguments.TelegramId);
 
         final GUIExitSignal guiExitSignal = new GUIExitSignal();
         guiExitSignal.setTelegramId(currentTelegramId);
@@ -40,8 +40,8 @@ public class CommandParser
 
     private Signal SetUserCommand(Map<CommandArguments, Object> kwargs)
     {
-        var args = (String[])kwargs.get(CommandArguments.UserArgs);
-        var currentTelegramId = (Long)kwargs.get(CommandArguments.TelegramId);
+        var args = (String[]) kwargs.get(CommandArguments.UserArgs);
+        var currentTelegramId = (Long) kwargs.get(CommandArguments.TelegramId);
 
         var id = 0;
         try
@@ -60,7 +60,7 @@ public class CommandParser
 
     private Signal ShowHelpCommand(Map<CommandArguments, Object> kwargs)
     {
-        var currentTelegramId = (Long)kwargs.get(CommandArguments.TelegramId);
+        var currentTelegramId = (Long) kwargs.get(CommandArguments.TelegramId);
 
         var message = "";
         message = "отправить *сообщение* - отправить сообщение пользователю в текущий диалог\n" +
@@ -76,9 +76,9 @@ public class CommandParser
     private Signal ReadMessagesCommand(Map<CommandArguments, Object> kwargs)
     {
         // по хорошему следующие 3 строки надо траем всё проверить что можно так делать
-        var user = (SimpleUserToken)kwargs.get(CommandArguments.User);
-        var args = (String[])kwargs.get(CommandArguments.UserArgs);
-        var currentTelegramId = (Long)kwargs.get(CommandArguments.TelegramId);
+        var user = (SimpleUserToken) kwargs.get(CommandArguments.User);
+        var args = (String[]) kwargs.get(CommandArguments.UserArgs);
+        var currentTelegramId = (Long) kwargs.get(CommandArguments.TelegramId);
 
         if (args.length != 0)
         {
@@ -101,9 +101,9 @@ public class CommandParser
     private Signal SendMessageCommand(Map<CommandArguments, Object> kwargs)
     {
         // по хорошему следующие 3 строки надо траем всё проверить что можно так делать, и если нет вернуть fail
-        var user = (SimpleUserToken)kwargs.get(CommandArguments.User);
-        var args = (String[])kwargs.get(CommandArguments.UserArgs);
-        var currentTelegramId = (Long)kwargs.get(CommandArguments.TelegramId);
+        var user = (SimpleUserToken) kwargs.get(CommandArguments.User);
+        var args = (String[]) kwargs.get(CommandArguments.UserArgs);
+        var currentTelegramId = (Long) kwargs.get(CommandArguments.TelegramId);
 
         if (args.length == 0)
         {
@@ -130,13 +130,13 @@ public class CommandParser
     }
 
 
-    public void addCommand(Command command)
+    private void addCommand(Command command)
     {
         _commands.put(command.getName(), command.getHandler());
     }
 
 
-    public Signal parse(UserIOSignal signal, SimpleUserToken user)
+    Signal parse(UserIOSignal signal, SimpleUserToken user)
     {
         var command = signal.getText();
         var fields = command.toLowerCase().trim().split(" ");

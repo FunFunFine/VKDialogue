@@ -3,6 +3,7 @@ package ru.urgu.vkDialogueBot.Events;
 public class GUIStartedSignal implements Signal
 {
     private Long chatId;
+
     @Override
     public Long getTelegramId()
     {

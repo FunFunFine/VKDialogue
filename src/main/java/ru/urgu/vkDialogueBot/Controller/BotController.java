@@ -15,10 +15,8 @@ public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
     private final IVkModel _model;
-    private final UsersDataBase _users ;
+    private final UsersDataBase _users;
     private Long _currentTelegramId = -1L;
-    private LinkedList<IObserver> _observers = new LinkedList<>();
-    private CommandParser _parser = null;
     private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
     {
         {
@@ -31,6 +29,8 @@ public class BotController implements IObserver, IObservable
             put(SetUserEvent.class, event -> processSet((SetUserEvent) event));
         }
     };
+    private LinkedList<IObserver> _observers = new LinkedList<>();
+    private CommandParser _parser = null;
 
 
     public BotController(IVkModel vkModel, IView gui, UsersDataBase users)

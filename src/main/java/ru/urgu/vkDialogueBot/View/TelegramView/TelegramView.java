@@ -29,19 +29,6 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     {
     }
 
-    @Override
-    public void run()
-    {
-        var botsApi = new TelegramBotsApi();
-        try
-        {
-            botsApi.registerBot(this);
-        } catch (TelegramApiRequestException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     private static ReplyKeyboardMarkup getMainMenuKeyboard()
     {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -60,6 +47,19 @@ public class TelegramView extends TelegramLongPollingBot implements IView
         keyboard.add(keyboardSecondRow);
         replyKeyboardMarkup.setKeyboard(keyboard);
         return replyKeyboardMarkup;
+    }
+
+    @Override
+    public void run()
+    {
+        var botsApi = new TelegramBotsApi();
+        try
+        {
+            botsApi.registerBot(this);
+        } catch (TelegramApiRequestException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

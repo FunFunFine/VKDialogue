@@ -4,14 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
-import ru.urgu.vkDialogueBot.Events.*;
+import ru.urgu.vkDialogueBot.Events.CheckMessagesEvent;
+import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
+import ru.urgu.vkDialogueBot.Events.Signal;
+import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.Model.IVkModel;
 import ru.urgu.vkDialogueBot.View.IView;
 
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 public class BotController_Should
 {
@@ -66,9 +69,9 @@ public class BotController_Should
         try
         {
             controller.receive(signal);
-        }
-        catch (Exception ignored){}
-        finally
+        } catch (Exception ignored)
+        {
+        } finally
         {
             verify(fakeModel).checkMessages(any(CheckMessagesEvent.class));
         }
@@ -88,7 +91,9 @@ public class BotController_Should
         controller.notify(new UserIOSignal("smth"));
 
         for (var obs : observers)
+        {
             verify(obs).receive(any(Signal.class));
+        }
         verify(fakeView).receive(any(Signal.class));
     }
 

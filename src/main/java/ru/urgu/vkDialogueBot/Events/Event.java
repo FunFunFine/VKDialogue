@@ -5,8 +5,9 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 public abstract class Event implements Signal
 {
     private IUserToken _userToken;
+    private Long chatId;
 
-    public Event(IUserToken token)
+    Event(IUserToken token)
     {
         _userToken = token;
     }
@@ -17,8 +18,6 @@ public abstract class Event implements Signal
     }
 
     public abstract String describe();
-
-    private Long chatId;
 
     @Override
     public Long getTelegramId()
