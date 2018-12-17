@@ -1,1 +1,0 @@
-bot:  java -cp target/classes:target/dependency/* ru.urgu.vkDialogueBot.Main
