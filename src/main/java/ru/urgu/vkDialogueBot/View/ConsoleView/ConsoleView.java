@@ -1,5 +1,6 @@
 package ru.urgu.vkDialogueBot.View.ConsoleView;
 
+import lombok.var;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.View.IView;

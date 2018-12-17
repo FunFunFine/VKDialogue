@@ -17,18 +17,18 @@ public class Main
     {
         ApiContextInitializer.init();
 
-        var gui = new TelegramView();
-        var vkApi = new VkApi(getTokenFromCfg());
-        var controller = new BotController(new VkCommunityModel(vkApi), gui);
+        TelegramView gui = new TelegramView();
+        VkApi vkApi = new VkApi(getTokenFromCfg());
+        BotController controller = new BotController(new VkCommunityModel(vkApi), gui);
         controller.runBot();
     }
 
     private static String getTokenFromCfg()
     {
-        var accessToken = "";
+        String accessToken = "";
         try
         {
-            var reader = new BufferedReader(new FileReader("passwords.config"));
+            BufferedReader reader = new BufferedReader(new FileReader("passwords.config"));
             accessToken = reader.readLine().split("=")[1];
         } catch (IOException e)
         {

@@ -2,6 +2,7 @@ package ru.urgu.vkDialogueBot.Model;
 
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
+import lombok.var;
 import ru.urgu.vkDialogueBot.Controller.IUser;
 import ru.urgu.vkDialogueBot.Events.*;
 

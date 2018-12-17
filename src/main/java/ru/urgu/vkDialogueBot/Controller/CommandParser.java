@@ -1,5 +1,6 @@
 package ru.urgu.vkDialogueBot.Controller;
 
+import lombok.var;
 import ru.urgu.vkDialogueBot.Events.*;
 import ru.urgu.vkDialogueBot.Utils.Func;
 

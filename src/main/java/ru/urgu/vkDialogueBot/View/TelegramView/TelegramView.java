@@ -1,6 +1,7 @@
 package ru.urgu.vkDialogueBot.View.TelegramView;
 
 
+import lombok.var;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;

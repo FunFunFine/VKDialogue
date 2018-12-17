@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class CommandParserShould
 {
     private CommandParser parser;
-    private Set<Command> _commands = new HashSet<>()
+    private Set<Command> _commands = new HashSet<Command>()
     {
         {
             add(new Command("help", this::ensure));

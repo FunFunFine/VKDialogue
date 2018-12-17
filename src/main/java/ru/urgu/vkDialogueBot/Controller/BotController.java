@@ -1,5 +1,6 @@
 package ru.urgu.vkDialogueBot.Controller;
 
+import lombok.var;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
@@ -16,7 +17,7 @@ public class BotController implements IObserver, IObservable
     private final SimpleUserToken _user;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
-    private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<>()
+    private final Map<Class, Function<Signal, Signal>> _eventActionMapping = new HashMap<Class, Function<Signal, Signal>>()
     {
         {
             put(GUIStartedSignal.class, signal -> greetUser());
@@ -38,7 +39,7 @@ public class BotController implements IObserver, IObservable
     public BotController(VkCommunityModel vkModel, IView gui)
     {
         _parser = new CommandParser();
-        Set<Command> _commands = new HashSet<>()
+        Set<Command> _commands = new HashSet<Command>()
         {
             {
                 add(new Command("send", fields -> SendMessageCommand(fields)));
@@ -156,7 +157,7 @@ public class BotController implements IObserver, IObservable
     @Override
     public void notify(Signal event)
     {
-        for (var observer : _observers)
+        for (IObserver observer : _observers)
         {
             observer.receive(event);
         }
