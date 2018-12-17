@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.urgu.vkDialogueBot.Controller.Command;
 import ru.urgu.vkDialogueBot.Controller.CommandParser;
+import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.*;
 
 import java.lang.reflect.Type;
@@ -15,27 +16,27 @@ import static org.junit.Assert.assertTrue;
 public class CommandParserShould
 {
     private CommandParser parser;
-    private Set<Command> _commands = new HashSet<>()
-    {
-        {
-            add(new Command("отправить", this::ensure));
-            add(new Command("прочитать", this::ensure));
-        }
+//    private Set<Command> _commands = new HashSet<>()
+//    {
+//        {
+//            add(new Command("отправить", this::ensure));
+//            add(new Command("прочитать", this::ensure));
+//        }
+//
+//        private Signal ensure(String[] fields, Long num)
+//        {
+//            assertTrue(true);
+//            return null;
+//        }
+//
+//    };
 
-        private Signal ensure(String[] fields, Long num)
-        {
-            assertTrue(true);
-            return null;
-        }
 
-    };
-
-
-    @Before
-    public void setUp()
-    {
-        parser = new CommandParser(_commands.toArray(new Command[0]));
-    }
+//    @Before
+//    public void setUp()
+//    {
+//        parser = new CommandParser(_commands.toArray(new Command[0]));
+//    }
 
 
     @Test
@@ -60,7 +61,7 @@ public class CommandParserShould
     {
         for (var signal : signals)
         {
-            var result = parser.parse(signal);
+            var result = parser.parse(signal, new SimpleUserToken(0l));
             assertSame(resultSignal, result.getClass());
         }
     }
