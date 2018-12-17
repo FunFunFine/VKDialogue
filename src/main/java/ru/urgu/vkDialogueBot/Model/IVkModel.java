@@ -5,15 +5,12 @@ import ru.urgu.vkDialogueBot.Events.Event;
 import ru.urgu.vkDialogueBot.Events.SendMessageEvent;
 import ru.urgu.vkDialogueBot.Events.UserCreationEvent;
 
-public abstract class VkModel
+public interface IVkModel
 {
+    Event checkMessages(CheckMessagesEvent event);
 
+    Event sendMessage(SendMessageEvent event);
 
-    public abstract Event checkMessages(CheckMessagesEvent event);
-
-    public abstract Event sendMessage(SendMessageEvent event);
-
-    public abstract Event addUser(UserCreationEvent event);
-
+    Event addUser(UserCreationEvent event);
 
 }

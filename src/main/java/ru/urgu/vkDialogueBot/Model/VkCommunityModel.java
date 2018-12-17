@@ -7,7 +7,7 @@ import ru.urgu.vkDialogueBot.Events.*;
 
 import java.util.HashSet;
 
-public class VkCommunityModel extends VkModel
+public class VkCommunityModel implements IVkModel
 {
     private final HashSet<IUser> _users = new HashSet<>();
     private final IVkApi _vkApi;

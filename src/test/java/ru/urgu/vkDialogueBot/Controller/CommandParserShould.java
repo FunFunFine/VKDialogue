@@ -1,17 +1,9 @@
-package ru.urgu.vkDialogueBot.View;
+package ru.urgu.vkDialogueBot.Controller;
 
-import org.junit.Before;
 import org.junit.Test;
-import ru.urgu.vkDialogueBot.Controller.Command;
-import ru.urgu.vkDialogueBot.Controller.CommandParser;
-import ru.urgu.vkDialogueBot.Controller.SimpleUserToken;
 import ru.urgu.vkDialogueBot.Events.*;
 
-import java.lang.reflect.Type;
-import java.util.*;
-
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 public class CommandParserShould
 {

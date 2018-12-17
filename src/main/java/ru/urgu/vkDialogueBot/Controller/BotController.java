@@ -3,16 +3,18 @@ package ru.urgu.vkDialogueBot.Controller;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObservable;
 import ru.urgu.vkDialogueBot.Controller.ObserverPattern.IObserver;
 import ru.urgu.vkDialogueBot.Events.*;
-import ru.urgu.vkDialogueBot.Model.VkCommunityModel;
+import ru.urgu.vkDialogueBot.Model.IVkModel;
 import ru.urgu.vkDialogueBot.View.IView;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
-    private final VkCommunityModel _model;
+    private final IVkModel _model;
     private final UsersDataBase _users ;
     private Long _currentTelegramId = -1L;
     private LinkedList<IObserver> _observers = new LinkedList<>();
@@ -31,7 +33,7 @@ public class BotController implements IObserver, IObservable
     };
 
 
-    public BotController(VkCommunityModel vkModel, IView gui, UsersDataBase users)
+    public BotController(IVkModel vkModel, IView gui, UsersDataBase users)
     {
         _users = users;
         _eventActionMapping.put(UserIOSignal.class, signal -> {
