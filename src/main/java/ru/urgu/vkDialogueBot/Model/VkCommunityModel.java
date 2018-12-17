@@ -32,7 +32,7 @@ public class VkCommunityModel implements IVkModel
         }
     }
 
-    private int getId(MessageEvent event) throws ClientException, ApiException
+    public int getId(MessageEvent event) throws ClientException, ApiException
     {
         var idType = event.getReceiverType();
         switch (idType)
@@ -57,7 +57,6 @@ public class VkCommunityModel implements IVkModel
 
         } catch (ApiException | ClientException e)
         {
-            var m = e.getMessage();
             return new FailureEvent(event.getUserToken(), e.getMessage());
         }
     }

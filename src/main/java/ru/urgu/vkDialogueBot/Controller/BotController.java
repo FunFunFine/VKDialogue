@@ -25,8 +25,8 @@ public class BotController implements IObserver, IObservable
             put(GUIStartedSignal.class, signal -> greetUser());
             put(GetHelpEvent.class, event -> processHelp((GetHelpEvent) event));
             put(GUIExitSignal.class, event -> event);
-            put(SendMessageEvent.class, (event) -> processSend((SendMessageEvent) event));
-            put(CheckMessagesEvent.class, (event) -> processCheck((CheckMessagesEvent) event));
+            put(SendMessageEvent.class, event -> processSend((SendMessageEvent) event));
+            put(CheckMessagesEvent.class, event -> processCheck((CheckMessagesEvent) event));
             put(FailureEvent.class, event -> event);
             put(SetUserEvent.class, event -> processSet((SetUserEvent) event));
         }
