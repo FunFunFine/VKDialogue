@@ -15,29 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CommandParserShould
 {
-    private CommandParser parser;
-//    private Set<Command> _commands = new HashSet<>()
-//    {
-//        {
-//            add(new Command("отправить", this::ensure));
-//            add(new Command("прочитать", this::ensure));
-//        }
-//
-//        private Signal ensure(String[] fields, Long num)
-//        {
-//            assertTrue(true);
-//            return null;
-//        }
-//
-//    };
-
-
-//    @Before
-//    public void setUp()
-//    {
-//        parser = new CommandParser(_commands.toArray(new Command[0]));
-//    }
-
+    private CommandParser parser = new CommandParser();
 
     @Test
     public void Pass_WhenHelp()
@@ -57,26 +35,42 @@ public class CommandParserShould
         CheckResult(SetUserEvent.class, sigBig, sigSmall);
     }
 
-    private void CheckResult(Class resultSignal, UserIOSignal... signals)
-    {
-        for (var signal : signals)
-        {
-            var result = parser.parse(signal, new SimpleUserToken(0l));
-            assertSame(resultSignal, result.getClass());
-        }
-    }
 
     @Test
     public void Pass_WhenRead()
     {
-       // parser.parse("read");
-       // parser.parse("READ");
+        var sigBig = new UserIOSignal("прочитать");
+        var sigSmall = new UserIOSignal("ПРОЧитать");
+
+        CheckResult(CheckMessagesEvent.class, sigBig, sigSmall);
     }
 
     @Test
     public void Pass_WhenSend()
     {
-//        parser.parse("Send abwer");
-//        parser.parse("send 1234");
+        var sigBig = new UserIOSignal("Отправить abwer");
+        var sigSmall = new UserIOSignal("отправить 1234");
+
+        CheckResult(SendMessageEvent.class, sigBig, sigSmall);
+    }
+
+    @Test
+    public void Pass_WhenExit()
+    {
+        var sigBig = new UserIOSignal("Выход");
+        var sigSmall = new UserIOSignal("выход");
+
+        CheckResult(GUIExitSignal.class, sigBig, sigSmall);
+    }
+
+    private void CheckResult(Class resultSignal, UserIOSignal... signals)
+    {
+        var responder = new SimpleUserToken(0l);
+        responder.setCurrentResponderId(0);
+        for (var signal : signals)
+        {
+            var result = parser.parse(signal, responder);
+            assertSame(resultSignal, result.getClass());
+        }
     }
 }
