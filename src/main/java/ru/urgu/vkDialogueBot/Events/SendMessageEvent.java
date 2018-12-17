@@ -9,8 +9,6 @@ import ru.urgu.vkDialogueBot.Controller.IUserToken;
 @Value
 public class SendMessageEvent extends MessageEvent
 {
-
-
     private String _message;
 
     public SendMessageEvent(int id, String message, IUserToken token)
@@ -45,7 +43,4 @@ public class SendMessageEvent extends MessageEvent
     {
         return String.format("Отправляем %s для id %s", _message, _id);
     }
-
-
-
 }

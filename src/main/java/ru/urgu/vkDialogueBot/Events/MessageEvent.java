@@ -8,7 +8,7 @@ public abstract class MessageEvent extends Event
     String _screenName = null;
     String _name = null;
     String _surname = null;
-    int _id = 0;
+    int _id = -1;
 
     MessageEvent(IUserToken token, ReceiverType receiverType)
     {

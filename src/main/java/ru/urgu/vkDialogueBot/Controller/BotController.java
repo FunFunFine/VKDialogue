@@ -13,7 +13,7 @@ public class BotController implements IObserver, IObservable
 {
     private final IView _gui;
     private final VkCommunityModel _model;
-    private final UsersDataBase _users;
+    private final UsersDataBase _users ;
     private Long _currentTelegramId = -1L;
     private LinkedList<IObserver> _observers = new LinkedList<>();
     private CommandParser _parser = null;
@@ -21,11 +21,6 @@ public class BotController implements IObserver, IObservable
     {
         {
             put(GUIStartedSignal.class, signal -> greetUser());
-            put(UserIOSignal.class, signal -> {
-                var ioSignal = ((UserIOSignal) signal);
-                var parsedSignal = _parser.parse(ioSignal);
-                return _eventActionMapping.get(parsedSignal.getClass()).apply(parsedSignal);
-            });
             put(GetHelpEvent.class, event -> processHelp((GetHelpEvent) event));
             put(GUIExitSignal.class, event -> event);
             put(SendMessageEvent.class, (event) -> processSend((SendMessageEvent) event));
@@ -39,69 +34,25 @@ public class BotController implements IObserver, IObservable
     public BotController(VkCommunityModel vkModel, IView gui, UsersDataBase users)
     {
         _users = users;
-        Set<Command> _commands = new HashSet<>()
-        {
-            {
-                add(new Command("отправить", (fields, i) -> SendMessageCommand(fields, i)));
-                add(new Command("прочитать", (fields, i) -> ReadMessagesCommand(fields, i)));
-            }
-        };
-        _parser = new CommandParser((Command[]) _commands.toArray());
+        _eventActionMapping.put(UserIOSignal.class, signal -> {
+            var ioSignal = ((UserIOSignal) signal);
+            var parsedSignal = _parser.parse(ioSignal, _users.GetUser(_currentTelegramId));
+            return _eventActionMapping.get(parsedSignal.getClass()).apply(parsedSignal);
+        });
+//        Set<Command> _commands = new HashSet<>()
+//        {
+//            {
+//                add(new Command("отправить", (fields, i) -> SendMessageCommand(fields, i)));
+//                add(new Command("прочитать", (fields, i) -> ReadMessagesCommand(fields, i)));
+//            }
+//        };
+        _parser = new CommandParser();
         _model = vkModel;
         _gui = gui;
         gui.addObserver(this);
         this.addObserver(gui);
 
         //_user = new SimpleUserToken(5463728);
-    }
-
-
-    private Signal ReadMessagesCommand(String[] args, Long id)
-    {
-        var user = _users.GetUser(_currentTelegramId);
-        if (args.length != 0)
-        {
-            final FailureEvent event = new FailureEvent(null, "Неизвестная команда");
-            event.setTelegramId(_currentTelegramId);
-            return event;
-        }
-        if (user.getCurrentResponderId() == -1)
-        {
-            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
-            failureEvent.setTelegramId(_currentTelegramId);
-            return failureEvent;
-        }
-        var event = new CheckMessagesEvent(user.getCurrentResponderId(), user);
-        event.setOldMessagesAmount(10);
-        event.setTelegramId(_currentTelegramId);
-        return event;
-    }
-
-    private Signal SendMessageCommand(String[] fields, Long id)
-    {
-        var user = _users.GetUser(_currentTelegramId);
-        if (fields.length == 0)
-        {
-            final FailureEvent failureEvent = new FailureEvent(null, "Зачем посылать пустое сообщение?");
-            failureEvent.setTelegramId(_currentTelegramId);
-            return failureEvent;
-        }
-        if (user.getCurrentResponderId() == -1)
-        {
-            final FailureEvent failureEvent = new FailureEvent(null, "Нужно сделать выбрать_получателя *id*");
-            failureEvent.setTelegramId(_currentTelegramId);
-            return failureEvent;
-        }
-        var headline = "Сообщение пользователя " + user.getHash() + ":\n";
-        var messageBuilder = new StringBuilder();
-        for (String field : fields)
-        {
-            messageBuilder.append(field).append(" ");
-        }
-        final SendMessageEvent sendMessageEvent = new SendMessageEvent(user.getCurrentResponderId(), headline + messageBuilder.toString(), user);
-        sendMessageEvent.setTelegramId(_currentTelegramId);
-
-        return sendMessageEvent;
     }
 
     private Signal processHelp(GetHelpEvent event)
