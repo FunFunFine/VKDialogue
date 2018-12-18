@@ -14,6 +14,7 @@ import ru.urgu.vkDialogueBot.Events.FailureEvent;
 import ru.urgu.vkDialogueBot.Events.Signal;
 import ru.urgu.vkDialogueBot.Events.UserIOSignal;
 import ru.urgu.vkDialogueBot.View.IView;
+import ru.urgu.vkDialogueBot.View.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,9 +25,12 @@ public class TelegramView extends TelegramLongPollingBot implements IView
 {
     private final List<IObserver> _observers = new LinkedList<>();
     private final HashMap<Long, String> _lastMessages = new HashMap<>();
+    private Logger logger;
 
-    public TelegramView()
+    public TelegramView(Logger logger)
     {
+
+        this.logger = logger;
     }
 
     private static ReplyKeyboardMarkup getMainMenuKeyboard()
@@ -65,6 +69,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void notify(Signal event)
     {
+        logger.Log("notifying event:"+event.getClass().getName());
         for (var observer : _observers)
         {
             observer.receive(event);
@@ -86,6 +91,8 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public void receive(Signal event)
     {
+        logger.Log("receiving event:"+event.getClass().getName());
+
         if (event instanceof UserIOSignal)
         {
             var ioSignal = (UserIOSignal) event;
@@ -122,6 +129,8 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             return;
         }
         var messageText = update.getMessage().getText();
+        logger.Log("got a message: "+ messageText);
+
         Signal signal;
 
         synchronized (_lastMessages)

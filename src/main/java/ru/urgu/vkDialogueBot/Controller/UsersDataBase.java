@@ -40,11 +40,12 @@ public class UsersDataBase
     {
         try
         {
-            FileInputStream fis = new FileInputStream("users.ser");
+            if (false){ FileInputStream fis = new FileInputStream("users.ser");
             ObjectInputStream ois = new ObjectInputStream(fis);
             _users = (HashMap<Long, SimpleUserToken>) ois.readObject();
             ois.close();
-            fis.close();
+            fis.close();}
+            _users = new HashMap<>();
         } catch (IOException ioe)
         {
             ioe.printStackTrace();
@@ -59,12 +60,12 @@ public class UsersDataBase
     {
         try
         {
-            FileOutputStream fos =
+            if (false) {  FileOutputStream fos =
                     new FileOutputStream("users.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(_users);
             oos.close();
-            fos.close();
+            fos.close();}
         } catch (IOException ioe)
         {
             ioe.printStackTrace();

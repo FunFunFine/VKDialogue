@@ -7,6 +7,7 @@
         <maven.compiler.source>1.10</maven.compiler.source>
         <maven.compiler.target>1.10</maven.compiler.target>
         <sourceDirectory>src/main/java/ru/urgu/vkDialogueBot</sourceDirectory>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <groupId>ru.urgu</groupId>
@@ -79,6 +80,9 @@
                     <processTypes>
                         <worker>java $JAVA_OPTS -cp target/classes:target/dependency/* ru.urgu.vkDialogueBot.Main</worker>
                     </processTypes>
+                    <configVars>
+                        <JAVA_OPTS>-Xmx384m -Xss512k -XX:+UseCompressedOops -Dfile.encoding=UTF-8</JAVA_OPTS>
+                    </configVars>
                 </configuration>
             </plugin>
         </plugins>
