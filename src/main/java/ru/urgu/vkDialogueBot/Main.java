@@ -31,9 +31,6 @@ public class Main
         {
             dataBase.SaveDataBase();
         }
-        System.out.println("Default Charset = "+ Charset.defaultCharset());
-        String s = "Resumé of Schrödinger, Резюме Шрёдингера!";
-        System.out.println("s = "+ s);
 
     }
 
