@@ -115,7 +115,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
             execute(message);
         } catch (TelegramApiException e)
         {
-            e.printStackTrace();
+            logger.Error(e.getMessage());
         }
     }
 
@@ -197,6 +197,7 @@ public class TelegramView extends TelegramLongPollingBot implements IView
     @Override
     public String getBotToken()
     {
-        return "733250136:AAFHRqoIM4kGQZDvs1uiIeW7aytq2rhq64w";
+
+        return System.getenv("TG_TOKEN");
     }
 }

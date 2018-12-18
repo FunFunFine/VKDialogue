@@ -81,7 +81,7 @@
                         <worker>java $JAVA_OPTS -cp target/classes:target/dependency/* ru.urgu.vkDialogueBot.Main</worker>
                     </processTypes>
                     <configVars>
-                        <JAVA_OPTS>-Xmx384m -Xss512k -XX:+UseCompressedOops -Dfile.encoding=UTF-8</JAVA_OPTS>
+                        <JAVA_OPTS> -Xmx384m -Xss512k -XX:+UseCompressedOops -Dfile.encoding=UTF-8</JAVA_OPTS>
                     </configVars>
                 </configuration>
             </plugin>

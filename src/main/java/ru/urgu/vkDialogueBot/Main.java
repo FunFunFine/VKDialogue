@@ -43,7 +43,7 @@ public class Main
             accessToken = reader.readLine().split("=")[1];
         } catch (IOException e)
         {
-            return null;
+            return System.getenv("VK_TOKEN");
         }
         return accessToken;
     }

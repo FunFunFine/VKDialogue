@@ -6,4 +6,8 @@ public class Logger
     {
         System.out.println("[LOG]\t"+message);
     }
+    public void Error(String error)
+    {
+        System.err.println("[ERROR]\t"+error);
+    }
 }

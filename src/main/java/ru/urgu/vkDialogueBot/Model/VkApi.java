@@ -16,6 +16,7 @@ public class VkApi implements IVkApi
     public VkApi(String token)
     {
         this(172735284, token);
+        System.out.println(token);
     }
 
     public VkApi(int groupId, String accessToken)
